@@ -270,7 +270,7 @@
 }
 
 @utility primary-gradient {
-  background: linear-gradient(129deg, #2e8b57 0%, #5fb57e 100%);
+  background: linear-gradient(129deg, #36aa68 0%, #5fb57e 100%);
 }
 
 @utility dark-gradient {
@@ -308,7 +308,7 @@
 }
 
 @utility primary-text-gradient {
-  background: linear-gradient(129deg, #2e8b57 0%, #5fb57e 100%);
+  background: linear-gradient(129deg, #36aa68 0%, #5fb57e 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -385,7 +385,7 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #2e8b57;
+    background: #36aa68;
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -431,7 +431,7 @@
   }
 
   .markdown a {
-    color: #2e8b57;
+    color: #36aa68;
   }
 
   .markdown a,
@@ -453,7 +453,7 @@
     hyphens: auto;
 
     padding: 2px;
-    color: #2e8b57 !important;
+    color: #36aa68 !important;
   }
 
   .markdown pre {
