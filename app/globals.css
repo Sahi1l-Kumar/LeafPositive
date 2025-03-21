@@ -7,21 +7,26 @@
 @config '../tailwind.config.ts';
 
 @theme {
-  --color-primary-100: #fff1e6;
-  --color-primary-500: #ff7000;
+  --color-primary-100: #e6f5ec;
+  --color-primary-500: #2e8b57;
 
-  --color-dark-100: #000000;
-  --color-dark-200: #0f1117;
-  --color-dark-300: #151821;
-  --color-dark-400: #212734;
-  --color-dark-500: #101012;
+  --color-dark-100: #001a00;
+  --color-dark-200: #0f170f;
+  --color-dark-300: #152115;
+  --color-dark-400: #213421;
+  --color-dark-500: #101210;
 
-  --color-light-400: #858ead;
-  --color-light-500: #7b8ec8;
-  --color-light-700: #dce3f1;
-  --color-light-800: #f4f6f8;
-  --color-light-850: #fdfdfd;
+  --color-light-400: #8a9d8a;
+  --color-light-500: #7ba87b;
+  --color-light-700: #dce8dc;
+  --color-light-800: #f4f8f4;
+  --color-light-850: #fdfffe;
   --color-light-900: #ffffff;
+
+  /* Disease indicator colors (can be used contextually) */
+  --color-disease-mild: #f9c74f; /* Yellow for mild issues */
+  --color-disease-moderate: #f8961e; /* Orange for moderate issues */
+  --color-disease-severe: #f94144; /* Red for severe disease */
 
   --radius-2: 8px;
   --radius-1_5: 6px;
@@ -30,16 +35,17 @@
   --radius-sm: calc(var(--radius) - 4px);
 
   --shadow-light-100:
-    0px 12px 20px 0px rgba(184, 184, 184, 0.03),
-    0px 6px 12px 0px rgba(184, 184, 184, 0.02),
-    0px 2px 4px 0px rgba(184, 184, 184, 0.03);
-  --shadow-light-200: 10px 10px 20px 0px rgba(218, 213, 213, 0.1);
-  --shadow-light-300: -10px 10px 20px 0px rgba(218, 213, 213, 0.1);
-  --shadow-dark-100: 0px 2px 10px 0px rgba(46, 52, 56, 0.1);
-  --shadow-dark-200: 2px 0px 20px 0px rgba(39, 36, 36, 0.04);
+    0px 12px 20px 0px rgba(184, 200, 184, 0.03),
+    0px 6px 12px 0px rgba(184, 200, 184, 0.02),
+    0px 2px 4px 0px rgba(184, 200, 184, 0.03);
+  --shadow-light-200: 10px 10px 20px 0px rgba(213, 218, 213, 0.1);
+  --shadow-light-300: -10px 10px 20px 0px rgba(213, 218, 213, 0.1);
+  --shadow-dark-100: 0px 2px 10px 0px rgba(46, 56, 46, 0.1);
+  --shadow-dark-200: 2px 0px 20px 0px rgba(36, 39, 36, 0.04);
 
-  --background-image-auth-dark: url("/images/auth-dark.png");
-  --background-image-auth-light: url("/images/auth-light.png");
+  /* Updated background images - would need actual image files */
+  --background-image-auth-dark: url("/images/auth-dark-plant.png");
+  --background-image-auth-light: url("/images/auth-light-plant.png");
 
   --breakpoint-xs: 420px;
 
@@ -264,32 +270,45 @@
 }
 
 @utility primary-gradient {
-  background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+  background: linear-gradient(129deg, #2e8b57 0%, #5fb57e 100%);
 }
 
 @utility dark-gradient {
   background: linear-gradient(
     232deg,
-    rgba(23, 28, 35, 0.41) 0%,
-    rgba(19, 22, 28, 0.7) 100%
+    rgba(23, 35, 28, 0.41) 0%,
+    rgba(19, 28, 22, 0.7) 100%
   );
   background: linear-gradient(
     232deg,
-    rgba(23, 28, 35, 0.41) 0%,
-    rgba(19, 22, 28, 0.7) 100%
+    rgba(23, 35, 28, 0.41) 0%,
+    rgba(19, 28, 22, 0.7) 100%
   );
 }
 
 @utility light-gradient {
   background: linear-gradient(
     132deg,
-    rgba(247, 249, 255, 0.5) 0%,
-    rgba(229, 237, 255, 0.25) 100%
+    rgba(247, 255, 249, 0.5) 0%,
+    rgba(229, 255, 237, 0.25) 100%
   );
 }
 
+/* Disease severity gradients */
+@utility disease-mild-gradient {
+  background: linear-gradient(129deg, #f9c74f 0%, #fade9e 100%);
+}
+
+@utility disease-moderate-gradient {
+  background: linear-gradient(129deg, #f8961e 0%, #fac380 100%);
+}
+
+@utility disease-severe-gradient {
+  background: linear-gradient(129deg, #f94144 0%, #fb9294 100%);
+}
+
 @utility primary-text-gradient {
-  background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+  background: linear-gradient(129deg, #2e8b57 0%, #5fb57e 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -361,12 +380,12 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #888;
+    background: #8a9d8a;
     border-radius: 50px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #2e8b57;
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -381,8 +400,8 @@
   }
 
   .active-theme {
-    filter: invert(53%) sepia(98%) saturate(3332%) hue-rotate(0deg)
-      brightness(104%) contrast(106%) !important;
+    filter: invert(53%) sepia(40%) saturate(1000%) hue-rotate(120deg)
+      brightness(90%) contrast(90%) !important;
   }
 
   .hash-span {
@@ -396,15 +415,15 @@
   }
 
   .dark .mdxeditor-toolbar {
-    background: #151821 !important;
+    background: #152115 !important;
   }
 
   .dark .mdxeditor-toolbar button svg {
-    color: #858ead !important;
+    color: #8a9d8a !important;
   }
 
   .dark .mdxeditor-toolbar button:hover svg {
-    color: #000 !important;
+    color: #fff !important;
   }
 
   .dark .mdxeditor-toolbar [role="separator"] {
@@ -412,7 +431,7 @@
   }
 
   .markdown a {
-    color: #1da1f2;
+    color: #2e8b57;
   }
 
   .markdown a,
@@ -434,7 +453,7 @@
     hyphens: auto;
 
     padding: 2px;
-    color: #ff7000 !important;
+    color: #2e8b57 !important;
   }
 
   .markdown pre {
@@ -467,4 +486,27 @@
 [data-bright-mode="light"]:not(:not(html.light [data-bright-mode="light"])) {
   display: grid !important; /* Apply grid only if it's visible */
   width: 100% !important;
+}
+
+/* Disease status indicators */
+.health-status-healthy {
+  @apply text-primary-500 bg-primary-100 opacity-30;
+}
+
+.health-status-mild {
+  color: var(--color-disease-mild);
+  background-color: var(--color-disease-mild);
+  opacity: 0.2;
+}
+
+.health-status-moderate {
+  color: var(--color-disease-moderate);
+  background-color: var(--color-disease-moderate);
+  opacity: 0.2;
+}
+
+.health-status-severe {
+  color: var(--color-disease-severe);
+  background-color: var(--color-disease-severe);
+  opacity: 0.2;
 }
