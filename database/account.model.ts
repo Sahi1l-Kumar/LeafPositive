@@ -7,6 +7,7 @@ export interface IAccount {
   password?: string;
   provider: string;
   providerAccountId: string;
+  phoneNumber?: string;
 }
 
 export interface IAccountDoc extends IAccount, Document {}
@@ -18,6 +19,7 @@ const AccountSchema = new Schema<IAccount>(
     password: { type: String },
     provider: { type: String, required: true },
     providerAccountId: { type: String, required: true },
+    phoneNumber: { type: String, unique: true, sparse: true },
   },
   { timestamps: true }
 );
