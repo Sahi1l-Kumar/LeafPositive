@@ -3,7 +3,6 @@ import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Config = {
-  darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -13,23 +12,23 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          "100": "#FFF1E6",
-          "500": "#FF7000",
+          "100": "#e6f5ec",
+          "500": "#36aa68",
         },
         dark: {
-          "100": "#000000",
-          "200": "#0F1117",
-          "300": "#151821",
-          "400": "#212734",
-          "500": "#101012",
+          "100": "#001a00",
+          "200": "#0f170f",
+          "300": "#152115",
+          "400": "#213421",
+          "500": "#101210",
         },
         light: {
-          "400": "#858EAD",
-          "500": "#7B8EC8",
-          "700": "#DCE3F1",
-          "800": "#F4F6F8",
-          "850": "#FDFDFD",
-          "900": "#FFFFFF",
+          "400": "#8a9d8a",
+          "500": "#7ba87b",
+          "700": "#dce8dc",
+          "800": "#f4f8f4",
+          "850": "#fdfffe",
+          "900": "#ffffff",
         },
       },
       borderRadius: {
