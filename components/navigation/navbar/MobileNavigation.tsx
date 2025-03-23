@@ -38,7 +38,7 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="background-light900_dark200 border-none"
+        className="background-light900_dark200 border-none flex flex-col"
       >
         <SheetTitle className="hidden">{t("navigation.title")}</SheetTitle>
         <Link href={`/${lng}`} className="flex items-center mt-3 gap-1">
@@ -54,14 +54,16 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
           </p>
         </Link>
 
-        <div className="no-scrollbar flex h-full flex-col justify-between overflow-y-auto">
+        <div className="custom-scrollbar flex-1 overflow-y-auto pb-[120px]">
           <SheetClose asChild>
-            <section className="flex flex-col gap-6 pt-16">
+            <section className="flex flex-col gap-6">
               <NavLinks isMobileNav lng={lng} />
             </section>
           </SheetClose>
+        </div>
 
-          <div className="flex flex-col gap-3 py-6">
+        <div className="absolute bottom-0 left-0 right-0 bg-inherit z-10 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex flex-col gap-3 p-4">
             {userId ? (
               <SheetClose asChild>
                 <form
@@ -73,7 +75,7 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
                 >
                   <Button
                     type="submit"
-                    className="base-medium w-fit !bg-transparent px-4 py-3"
+                    className="base-medium w-full !bg-transparent px-4 py-3"
                   >
                     <LogOut className="size-5 text-black dark:text-white" />
                     <span className="text-dark300_light900">
@@ -85,7 +87,7 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
             ) : (
               <>
                 <SheetClose asChild>
-                  <Link href={ROUTES.SIGN_IN(lng)}>
+                  <Link href={ROUTES.SIGN_IN(lng)} className="w-full">
                     <Button className="small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
                       <span className="primary-text-gradient">
                         {t("navigation.logIn")}
@@ -95,7 +97,7 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
                 </SheetClose>
 
                 <SheetClose asChild>
-                  <Link href={ROUTES.SIGN_UP(lng)}>
+                  <Link href={ROUTES.SIGN_UP(lng)} className="w-full">
                     <Button className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg border px-4 py-3 shadow-none">
                       {t("navigation.signUp")}
                     </Button>
