@@ -2,31 +2,49 @@
 
 import Image from "next/image";
 import { signIn } from "next-auth/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import ROUTES from "@/constants/routes";
+import { useTranslation } from "@/app/i18n/client";
 
 import { Button } from "../ui/button";
+import { LoadingSpinner } from "../Loader";
 
-const SocialAuthForm = () => {
+interface SocialAuthFormProps {
+  lng: string;
+}
+
+const SocialAuthForm = ({ lng }: SocialAuthFormProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const { t, i18n } = useTranslation(lng, "translation");
+
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      setIsLoading(false);
+    }
+  }, [i18n.isInitialized]);
+
+  if (isLoading) {
+    return (
+      <LoadingSpinner className="flex items-center justify-center h-full" />
+    );
+  }
   const buttonClass =
     "background-dark400_light900 body-medium text-dark200_light800 min-h-12 flex-1 rounded-2 px-4 py-3.5";
 
   const handleSignIn = async (provider: "google") => {
     try {
       await signIn(provider, {
-        callbackUrl: ROUTES.HOME,
+        callbackUrl: ROUTES.HOME(lng),
         redirect: false,
       });
     } catch (error) {
       console.log(error);
 
-      toast.error("Sign-in Failed", {
+      toast.error(t("auth.signInFailed"), {
         description:
-          error instanceof Error
-            ? error.message
-            : "An error occurred during sign-in",
+          error instanceof Error ? error.message : t("auth.genericError"),
       });
     }
   };
@@ -36,12 +54,12 @@ const SocialAuthForm = () => {
       <Button className={buttonClass} onClick={() => handleSignIn("google")}>
         <Image
           src="/icons/google.svg"
-          alt="Google Logo"
+          alt={t("auth.googleLogo")}
           width={20}
           height={20}
           className="mr-2.5 object-contain"
         />
-        <span>Log in with Google</span>
+        <span>{t("auth.loginWithGoogle")}</span>
       </Button>
     </div>
   );

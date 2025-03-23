@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 import { ReactNode } from "react";
+import { dir } from "i18next";
 
 import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
@@ -29,16 +30,24 @@ export const metadata: Metadata = {
   },
 };
 
-const RootLayout = async ({ children }: { children: ReactNode }) => {
+const RootLayout = async ({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: { lng?: string };
+}) => {
   const session = await auth();
+  const lng = params.lng || "en";
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lng} dir={lng ? dir(lng) : undefined} suppressHydrationWarning>
       <head></head>
-      <SessionProvider session={session}>
-        <body
-          className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
-        >
+      <body
+        className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
+        suppressHydrationWarning
+      >
+        <SessionProvider session={session}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -48,8 +57,8 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
             {children}
           </ThemeProvider>
           <Toaster />
-        </body>
-      </SessionProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 };

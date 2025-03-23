@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { z, ZodType } from "zod";
 
+import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -30,6 +31,7 @@ interface AuthFormProps<T extends FieldValues> {
   defaultValues: T;
   onSubmit: (data: T) => Promise<ActionResponse>;
   formType: "SIGN_IN" | "SIGN_UP";
+  lng: string;
 }
 
 const AuthForm = <T extends FieldValues>({
@@ -37,8 +39,10 @@ const AuthForm = <T extends FieldValues>({
   defaultValues,
   formType,
   onSubmit,
+  lng,
 }: AuthFormProps<T>) => {
   const router = useRouter();
+  const { t } = useTranslation(lng, "translation");
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -51,19 +55,24 @@ const AuthForm = <T extends FieldValues>({
     if (result?.success) {
       toast.success(
         formType === "SIGN_IN"
-          ? "Signed in successfully"
-          : "Signed up successfully"
+          ? t("auth.signInSuccess")
+          : t("auth.signUpSuccess")
       );
 
-      router.push(ROUTES.HOME);
+      router.push(ROUTES.HOME(lng));
     } else {
-      toast.error(`Error ${result?.status}`, {
+      toast.error(`${t("auth.error")} ${result?.status}`, {
         description: result?.error?.message,
       });
     }
   };
 
-  const buttonText = formType === "SIGN_IN" ? "Sign In" : "Sign Up";
+  const getFieldLabel = (fieldName: string) => {
+    if (fieldName === "email") {
+      return t("auth.emailAddress");
+    }
+    return t(`auth.${fieldName}`);
+  };
 
   return (
     <Form {...form}>
@@ -79,9 +88,7 @@ const AuthForm = <T extends FieldValues>({
             render={({ field }) => (
               <FormItem className="flex w-full flex-col gap-2.5">
                 <FormLabel className="paragraph-medium text-dark400_light700">
-                  {field.name === "email"
-                    ? "Email Address"
-                    : field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+                  {getFieldLabel(field.name)}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -102,30 +109,32 @@ const AuthForm = <T extends FieldValues>({
           className="primary-gradient paragraph-medium min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900"
         >
           {form.formState.isSubmitting
-            ? buttonText === "Sign In"
-              ? "Signin In..."
-              : "Signing Up..."
-            : buttonText}
+            ? formType === "SIGN_IN"
+              ? t("auth.signingIn")
+              : t("auth.signingUp")
+            : formType === "SIGN_IN"
+              ? t("auth.signIn")
+              : t("auth.signUp")}
         </Button>
 
         {formType === "SIGN_IN" ? (
           <p>
-            Don&apos;t have an account?{" "}
+            {t("auth.noAccount")}{" "}
             <Link
-              href={ROUTES.SIGN_UP}
+              href={ROUTES.SIGN_UP(lng)}
               className="paragraph-semibold primary-text-gradient"
             >
-              Sign up
+              {t("auth.signUp")}
             </Link>
           </p>
         ) : (
           <p>
-            Already have an account?{" "}
+            {t("auth.haveAccount")}{" "}
             <Link
-              href={ROUTES.SIGN_IN}
+              href={ROUTES.SIGN_IN(lng)}
               className="paragraph-semibold primary-text-gradient"
             >
-              Sign in
+              {t("auth.signIn")}
             </Link>
           </p>
         )}

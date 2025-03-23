@@ -55,6 +55,7 @@ const config = [
         },
       ],
       "comma-dangle": "off",
+      "react-hooks/rules-of-hooks": ["error", { allow: ["useTranslation"] }],
     },
   },
   {

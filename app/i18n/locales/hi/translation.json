@@ -1,0 +1,44 @@
+{
+  "auth": {
+    "signIn": "साइन इन करें",
+    "signUp": "साइन अप करें",
+    "signingIn": "साइन इन हो रहा है...",
+    "signingUp": "साइन अप हो रहा है...",
+    "signInSuccess": "सफलतापूर्वक साइन इन किया गया",
+    "signUpSuccess": "सफलतापूर्वक साइन अप किया गया",
+    "error": "त्रुटि",
+    "emailAddress": "ईमेल पता",
+    "password": "पासवर्ड",
+    "username": "उपयोगकर्ता नाम",
+    "name": "नाम",
+    "noAccount": "खाता नहीं है?",
+    "haveAccount": "पहले से ही खाता है?",
+    "signInFailed": "साइन-इन विफल रहा",
+    "genericError": "साइन-इन के दौरान एक त्रुटि हुई",
+    "googleLogo": "गूगल लोगो",
+    "loginWithGoogle": "गूगल के साथ लॉग इन करें",
+    "joinPlantPulse": "प्लांटपल्स में शामिल हों",
+    "getQuestionsAnswered": "पौधों के बारे में अपने प्रश्नों का उत्तर पाने के लिए",
+    "plantPulseLogo": "प्लांटपल्स लोगो"
+  },
+  "navigation": {
+    "logout": "लॉगआउट",
+    "logIn": "लॉग इन करें",
+    "signUp": "साइन अप करें",
+    "account": "खाता"
+  },
+  "theme": {
+    "toggle": "थीम टॉगल करें",
+    "light": "हल्का",
+    "dark": "गहरा",
+    "system": "सिस्टम"
+  },
+  "chat": {
+    "newChat": "नई चैट",
+    "searchPlaceholder": "चैट खोजें...",
+    "searchResults": "खोज परिणाम",
+    "yesterday": "कल",
+    "previousWeek": "पिछले 7 दिन",
+    "previousMonth": "पिछले 30 दिन"
+  }
+}

@@ -3,7 +3,7 @@
 import { Search, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { SheetClose } from "@/components/ui/sheet";
 import {
@@ -13,20 +13,41 @@ import {
   previousMonthChats,
 } from "@/constants";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/app/i18n/client";
+import { LoadingSpinner } from "@/components/Loader";
 
 const NavLinks = ({
   isMobileNav = false,
+  lng,
 }: {
   isMobileNav?: boolean;
-  userId?: string;
+  lng: string;
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(true);
+  const { t, i18n } = useTranslation(lng, "translation");
 
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      setIsLoading(false);
+    }
+  }, [i18n.isInitialized]);
+
+  if (isLoading) {
+    return (
+      <LoadingSpinner className="flex items-center justify-center h-full" />
+    );
+  }
+  const getLocalizedChatTitle = (chat, language) => {
+    return chat[`title_${language}`] || chat.title;
+  };
   // Filter chats based on search query
   const filteredChats = searchQuery
     ? dummyChats.filter((chat) =>
-        chat.title.toLowerCase().includes(searchQuery.toLowerCase())
+        getLocalizedChatTitle(chat, lng)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
       )
     : null;
 
@@ -35,14 +56,15 @@ const NavLinks = ({
     console.log("Creating new chat");
   };
 
-  const renderChatGroup = (chats, title) => {
+  const renderChatGroup = (chats, titleKey) => {
     if (chats.length === 0) return null;
 
     return (
       <div className="mt-4">
-        <p className="px-2 py-1 text-xs text-dark400_light500">{title}</p>
+        <p className="px-2 py-1 text-xs text-dark400_light500">{t(titleKey)}</p>
         {chats.map((chat) => {
           const isActive = pathname === `/chat/${chat.id}`;
+          const localizedTitle = getLocalizedChatTitle(chat, lng);
 
           const ChatLink = (
             <Link
@@ -54,7 +76,7 @@ const NavLinks = ({
                   : "text-dark300_light900"
               )}
             >
-              {chat.title}
+              {localizedTitle}
             </Link>
           );
 
@@ -80,7 +102,7 @@ const NavLinks = ({
             onClick={createNewChat}
           >
             <Plus size={16} className="mr-2" />
-            <span className="paragraph-medium">New chat</span>
+            <span className="paragraph-medium">{t("chat.newChat")}</span>
           </button>
         </div>
 
@@ -93,7 +115,7 @@ const NavLinks = ({
             />
             <input
               type="text"
-              placeholder="Search chats..."
+              placeholder={t("chat.searchPlaceholder")}
               className="w-full rounded-md bg-light-800 dark:bg-dark-300 py-2 pl-10 pr-4 text-sm text-dark300_light900 placeholder no-focus"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -108,10 +130,11 @@ const NavLinks = ({
           // Search results
           <div className="mt-4">
             <p className="px-2 py-1 text-xs text-dark400_light500">
-              Search Results
+              {t("chat.searchResults")}
             </p>
             {filteredChats?.map((chat) => {
               const isActive = pathname === `/chat/${chat.id}`;
+              const localizedTitle = getLocalizedChatTitle(chat, lng);
 
               const ChatLink = (
                 <Link
@@ -123,7 +146,7 @@ const NavLinks = ({
                       : "text-dark300_light900"
                   )}
                 >
-                  {chat.title}
+                  {localizedTitle}
                 </Link>
               );
 
@@ -139,9 +162,9 @@ const NavLinks = ({
         ) : (
           // Grouped chat history
           <>
-            {renderChatGroup(yesterdayChats, "Yesterday")}
-            {renderChatGroup(previousWeekChats, "Previous 7 Days")}
-            {renderChatGroup(previousMonthChats, "Previous 30 Days")}
+            {renderChatGroup(yesterdayChats, "chat.yesterday")}
+            {renderChatGroup(previousWeekChats, "chat.previousWeek")}
+            {renderChatGroup(previousMonthChats, "chat.previousMonth")}
           </>
         )}
       </div>

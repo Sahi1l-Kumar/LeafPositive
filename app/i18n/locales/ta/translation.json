@@ -1,0 +1,44 @@
+{
+  "auth": {
+    "signIn": "உள்நுழைக",
+    "signUp": "பதிவு செய்க",
+    "signingIn": "உள்நுழைகிறது...",
+    "signingUp": "பதிவு செய்கிறது...",
+    "signInSuccess": "வெற்றிகரமாக உள்நுழைந்தது",
+    "signUpSuccess": "வெற்றிகரமாக பதிவு செய்யப்பட்டது",
+    "error": "பிழை",
+    "emailAddress": "மின்னஞ்சல் முகவரி",
+    "password": "கடவுச்சொல்",
+    "username": "பயனர்பெயர்",
+    "name": "பெயர்",
+    "noAccount": "கணக்கு இல்லையா?",
+    "haveAccount": "ஏற்கனவே கணக்கு உள்ளதா?",
+    "signInFailed": "உள்நுழைவு தோல்வியடைந்தது",
+    "genericError": "உள்நுழைவின் போது ஒரு பிழை ஏற்பட்டது",
+    "googleLogo": "கூகுள் லோகோ",
+    "loginWithGoogle": "கூகுளுடன் உள்நுழைக",
+    "joinPlantPulse": "பிளாண்ட்பல்ஸில் சேரவும்",
+    "getQuestionsAnswered": "தாவரங்கள் குறித்த உங்கள் கேள்விகளுக்கு பதில் பெற",
+    "plantPulseLogo": "பிளாண்ட்பல்ஸ் லோகோ"
+  },
+  "navigation": {
+    "logout": "வெளியேறு",
+    "logIn": "உள்நுழைக",
+    "signUp": "பதிவு செய்க",
+    "account": "கணக்கு"
+  },
+  "theme": {
+    "toggle": "தீம் மாற்று",
+    "light": "வெளிச்சம்",
+    "dark": "இருள்",
+    "system": "சிஸ்டம்"
+  },
+  "chat": {
+    "newChat": "புதிய அரட்டை",
+    "searchPlaceholder": "அரட்டைகளைத் தேடுங்கள்...",
+    "searchResults": "தேடல் முடிவுகள்",
+    "yesterday": "நேற்று",
+    "previousWeek": "கடந்த 7 நாட்கள்",
+    "previousMonth": "கடந்த 30 நாட்கள்"
+  }
+}

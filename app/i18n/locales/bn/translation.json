@@ -1,0 +1,44 @@
+{
+  "auth": {
+    "signIn": "সাইন ইন করুন",
+    "signUp": "সাইন আপ করুন",
+    "signingIn": "সাইন ইন হচ্ছে...",
+    "signingUp": "সাইন আপ হচ্ছে...",
+    "signInSuccess": "সফলভাবে সাইন ইন করা হয়েছে",
+    "signUpSuccess": "সফলভাবে সাইন আপ করা হয়েছে",
+    "error": "ত্রুটি",
+    "emailAddress": "ইমেল ঠিকানা",
+    "password": "পাসওয়ার্ড",
+    "username": "ব্যবহারকারীর নাম",
+    "name": "নাম",
+    "noAccount": "অ্যাকাউন্ট নেই?",
+    "haveAccount": "ইতিমধ্যে একটি অ্যাকাউন্ট আছে?",
+    "signInFailed": "সাইন-ইন ব্যর্থ হয়েছে",
+    "genericError": "সাইন-ইন করার সময় একটি ত্রুটি ঘটেছে",
+    "googleLogo": "গুগল লোগো",
+    "loginWithGoogle": "গুগল দিয়ে লগ ইন করুন",
+    "joinPlantPulse": "প্ল্যান্টপালসে যোগ দিন",
+    "getQuestionsAnswered": "উদ্ভিদ সম্পর্কে আপনার প্রশ্নের উত্তর পেতে",
+    "plantPulseLogo": "প্ল্যান্টপালস লোগো"
+  },
+  "navigation": {
+    "logout": "লগআউট",
+    "logIn": "লগ ইন করুন",
+    "signUp": "সাইন আপ করুন",
+    "account": "অ্যাকাউন্ট"
+  },
+  "theme": {
+    "toggle": "থিম টগল করুন",
+    "light": "হালকা",
+    "dark": "গাঢ়",
+    "system": "সিস্টেম"
+  },
+  "chat": {
+    "newChat": "নতুন চ্যাট",
+    "searchPlaceholder": "চ্যাট অনুসন্ধান করুন...",
+    "searchResults": "অনুসন্ধানের ফলাফল",
+    "yesterday": "গতকাল",
+    "previousWeek": "গত 7 দিন",
+    "previousMonth": "গত 30 দিন"
+  }
+}
