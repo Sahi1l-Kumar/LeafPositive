@@ -17,9 +17,9 @@
     "genericError": "An error occurred during sign-in",
     "googleLogo": "Google Logo",
     "loginWithGoogle": "Log in with Google",
-    "joinPlantPulse": "Join PlantPulse",
+    "joinLeafPositive": "Join LeafPositive",
     "getQuestionsAnswered": "To get your questions answered regarding Plants",
-    "plantPulseLogo": "PlantPulse Logo"
+    "leafPositiveLogo": "LeafPositive Logo"
   },
   "navigation": {
     "logout": "Logout",

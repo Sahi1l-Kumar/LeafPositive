@@ -19,11 +19,11 @@ const Navbar = async ({ lng }: { lng: string }) => {
           src="/images/site-logo.svg"
           width={23}
           height={23}
-          alt="PlantPulse Logo"
+          alt="LeafPositive Logo"
         />
 
         <p className="h2-bold font-space-grotesk text-dark-100 dark:text-light-900 max-sm:hidden">
-          Plant<span className="text-primary-500">Pulse</span>
+          Leaf<span className="text-primary-500">Positive</span>
         </p>
       </Link>
 

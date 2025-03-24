@@ -15,7 +15,7 @@ const AuthLayout = async ({
   children: ReactNode;
   params: { lng: string };
 }) => {
-  const lng = await params.lng;
+  const { lng } = params;
   const { t } = await useTranslation(lng, "translation");
 
   return (
@@ -24,7 +24,7 @@ const AuthLayout = async ({
         <div className="flex items-center justify-between gap-2">
           <div className="space-y-2.5">
             <h1 className="h2-bold text-dark100_light900">
-              {t("auth.joinPlantPulse")}
+              {t("auth.joinLeafPositive")}
             </h1>
             <p className="paragraph-regular text-dark500_light400">
               {t("auth.getQuestionsAnswered")}
@@ -32,7 +32,7 @@ const AuthLayout = async ({
           </div>
           <Image
             src="/images/site-logo.svg"
-            alt={t("auth.plantPulseLogo")}
+            alt={t("auth.leafPositiveLogo")}
             width={50}
             height={50}
             className="object-contain"

@@ -50,7 +50,7 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
           />
 
           <p className="h2-bold font-space-grotesk text-dark-100 dark:text-light-900">
-            Plant<span className="text-primary-500">Pulse</span>
+            Leaf<span className="text-primary-500">Positive</span>
           </p>
         </Link>
 

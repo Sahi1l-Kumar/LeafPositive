@@ -17,9 +17,9 @@
     "genericError": "সাইন-ইন করার সময় একটি ত্রুটি ঘটেছে",
     "googleLogo": "গুগল লোগো",
     "loginWithGoogle": "গুগল দিয়ে লগ ইন করুন",
-    "joinPlantPulse": "প্ল্যান্টপালসে যোগ দিন",
+    "joinLeafPositive": "লিফ পজিটিভে যোগ দিন",
     "getQuestionsAnswered": "উদ্ভিদ সম্পর্কে আপনার প্রশ্নের উত্তর পেতে",
-    "plantPulseLogo": "প্ল্যান্টপালস লোগো"
+    "leafPositiveLogo": "লিফ পজিটিভ লোগো"
   },
   "navigation": {
     "logout": "লগআউট",

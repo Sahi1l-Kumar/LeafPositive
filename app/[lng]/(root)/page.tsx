@@ -128,7 +128,7 @@ const Home = () => {
     <div className="background-light850_dark100 min-h-screen flex flex-col">
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="h1-bold text-dark100_light900 text-center mb-8">
-          Plant Pulse
+          Leaf Positive
         </h1>
 
         {!diseaseData ? (

@@ -22,7 +22,7 @@ const spaceGrotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Plant Pulse",
+  title: "Leaf Positive",
   description:
     "An app that checks the pulse of your plants, detecting health issues and guiding you towards effective treatments.",
   icons: {
