@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
+import Google from "next-auth/providers/google";
 
 import { IAccountDoc } from "./database/account.model";
 import { IUserDoc } from "./database/user.model";
@@ -10,17 +10,7 @@ import { SignInSchema } from "./lib/validations";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-    }),
+    Google,
     Credentials({
       async authorize(credentials) {
         const validatedFields = SignInSchema.safeParse(credentials);

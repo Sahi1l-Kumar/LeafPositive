@@ -6,7 +6,7 @@ const ROUTES = {
   COMMUNITY: (lng: string) => `/${lng}/community`,
   PROFILE: (lng: string, id: string) => `/${lng}/profile/${id}`,
   QUESTION: (lng: string, id: string) => `/${lng}/questions/${id}`,
-  SIGN_IN_WITH_OAUTH: (lng: string) => `/${lng}/signin-with-oauth`,
+  SIGN_IN_WITH_OAUTH: `signin-with-oauth`,
 };
 
 export default ROUTES;

@@ -44,8 +44,8 @@
   --shadow-dark-200: 2px 0px 20px 0px rgba(36, 39, 36, 0.04);
 
   /* Updated background images - would need actual image files */
-  --background-image-auth-dark: url("/images/auth-dark-plant.png");
-  --background-image-auth-light: url("/images/auth-light-plant.png");
+  --background-image-auth-dark: url("/images/auth-dark.png");
+  --background-image-auth-light: url("/images/auth-light.png");
 
   --breakpoint-xs: 420px;
 

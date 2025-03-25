@@ -13,9 +13,9 @@ const AuthLayout = async ({
   params,
 }: {
   children: ReactNode;
-  params: { lng: string };
+  params: Promise<{ lng: string }>;
 }) => {
-  const { lng } = params;
+  const { lng } = await params;
   const { t } = await useTranslation(lng, "translation");
 
   return (
