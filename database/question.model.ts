@@ -8,6 +8,8 @@ export interface IQuestion {
   upvotes: number;
   downvotes: number;
   author: Types.ObjectId;
+  imageUrl?: string;
+  crop?: string;
 }
 
 export interface IQuestionDoc extends IQuestion, Document {}
@@ -20,6 +22,8 @@ const QuestionSchema = new Schema<IQuestion>(
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    imageUrl: { type: String },
+    crop: { type: String },
   },
   { timestamps: true }
 );

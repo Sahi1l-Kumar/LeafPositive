@@ -1,7 +1,7 @@
 import { Schema, models, model, Types, Document } from "mongoose";
 
 export interface IChat {
-  owner: Types.ObjectId;
+  author: Types.ObjectId;
   title: string;
   messages: Array<{
     sender: string;
@@ -16,7 +16,7 @@ export interface IChatDoc extends IChat, Document {}
 
 const ChatSchema = new Schema<IChat>(
   {
-    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     title: { type: String, default: "New Chat" },
     messages: [
       {
