@@ -203,3 +203,33 @@ export const HasVotedSchema = CreateVoteSchema.pick({
   targetId: true,
   targetType: true,
 });
+
+export const CreateChatSchema = z.object({
+  title: z.string().default("New Chat"),
+  message: z.object({
+    sender: z.enum(["user", "ai"]),
+    content: z.string().min(1, { message: "Message content is required." }),
+    imageUrl: z
+      .string()
+      .url({ message: "Please provide a valid URL." })
+      .optional(),
+    detectedDisease: z.string().optional(),
+  }),
+});
+
+export const GetChatSchema = z.object({
+  chatId: z.string().min(1, { message: "Chat ID is required." }),
+});
+
+export const AddMessageSchema = z.object({
+  chatId: z.string().min(1, "Chat ID is required"),
+  message: z.object({
+    sender: z.enum(["user", "ai"], {
+      required_error: "Sender is required",
+      invalid_type_error: "Sender must be either 'user' or 'ai'",
+    }),
+    content: z.string().min(1, "Message content is required"),
+    imageUrl: z.string().optional(),
+    detectedDisease: z.string().optional(),
+  }),
+});

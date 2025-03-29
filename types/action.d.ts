@@ -1,3 +1,5 @@
+import { AddMessageSchema } from "@/lib/validations";
+
 interface SignInWithOAuthParams {
   provider: "google";
   providerAccountId: string;
@@ -59,3 +61,20 @@ interface HasVotedResponse {
   hasUpvoted: boolean;
   hasDownvoted: boolean;
 }
+
+interface CreateChatParams {
+  title?: string;
+  message: {
+    sender: "user" | "ai";
+    content: string;
+    imageUrl?: string;
+    detectedDisease?: string;
+    timestamp: Date;
+  };
+}
+
+interface GetChatParams {
+  chatId: string;
+}
+
+export type AddMessageParams = z.infer<typeof AddMessageSchema>;

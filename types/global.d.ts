@@ -62,3 +62,18 @@ interface CropInfo {
   name: string;
   icon?: string;
 }
+
+interface Chat {
+  _id: string;
+  author: Author;
+  title: string;
+  messages: Array<{
+    sender: "user" | "ai";
+    content: string;
+    timestamp: Date;
+    imageUrl?: string;
+    detectedDisease?: string;
+  }>;
+  createdAt: Date;
+  updatedAt: Date;
+}
