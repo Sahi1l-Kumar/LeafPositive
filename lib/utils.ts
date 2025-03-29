@@ -39,24 +39,3 @@ export const formatNumber = (number: number) => {
     return number.toString();
   }
 };
-
-export function getLanguageFromCookie(): string {
-  // Check if we're in a server-side context
-  if (typeof window === "undefined") {
-    try {
-      const { cookies } = require("next/headers");
-      const cookieStore = cookies();
-      return cookieStore.get("i18next")?.value || "en";
-    } catch (error) {
-      return "en";
-    }
-  }
-
-  // Client-side retrieval
-  return (
-    document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("i18next="))
-      ?.split("=")[1] || "en"
-  );
-}

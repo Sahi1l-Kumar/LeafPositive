@@ -6,7 +6,6 @@ import ROUTES from "@/constants/routes";
 import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import { useTranslation } from "@/app/i18n";
 
 interface Props {
   id: string;
@@ -31,7 +30,6 @@ const UserAvatar = async ({
     .join("")
     .toUpperCase()
     .slice(0, 2);
-  const { t } = await useTranslation(lng, "translation");
 
   return (
     <Link href={ROUTES.PROFILE(lng, id)}>

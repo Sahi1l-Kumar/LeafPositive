@@ -10,12 +10,12 @@ import Answer, { IAnswerDoc } from "@/database/answer.model";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { AnswerServerSchema, GetAnswersSchema } from "../validations";
-import { getLanguageFromCookie } from "../utils";
+import getLanguageFromCookie from "../cookies";
 
 export async function createAnswer(
   params: CreateAnswerParams
 ): Promise<ActionResponse<IAnswerDoc>> {
-  const lng = getLanguageFromCookie();
+  const lng = await getLanguageFromCookie();
 
   const validationResult = await action({
     params,

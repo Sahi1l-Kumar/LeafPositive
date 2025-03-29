@@ -14,7 +14,8 @@ interface Question {
   downvotes: number;
   answers: number;
   views: number;
-  createdAt: Date;
+  crop?: string;
+  image?: string;
 }
 
 type ActionResponse<T = null> = {
@@ -53,4 +54,11 @@ interface Answer {
   createdAt: Date;
   upvotes: number;
   downvotes: number;
+  image?: string;
+}
+
+interface CropInfo {
+  id: string;
+  name: string;
+  icon?: string;
 }

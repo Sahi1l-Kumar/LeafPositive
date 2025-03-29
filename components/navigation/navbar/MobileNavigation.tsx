@@ -54,6 +54,14 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
           </p>
         </Link>
 
+        <SheetClose asChild>
+          <Link href={ROUTES.COMMUNITY(lng)} className="mt-6 flex-center">
+            <Button className="primary-gradient w-[90%] min-h-[46px] px-4 py-3 !text-light-900">
+              Community
+            </Button>
+          </Link>
+        </SheetClose>
+
         <div className="custom-scrollbar flex-1 overflow-y-auto pb-[120px]">
           <SheetClose asChild>
             <section className="flex flex-col gap-6">
@@ -75,7 +83,7 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
                 >
                   <Button
                     type="submit"
-                    className="base-medium w-full !bg-transparent px-4 py-3"
+                    className="base-medium w-full !bg-transparent px-4 py-3 border-1"
                   >
                     <LogOut className="size-5 text-black dark:text-white" />
                     <span className="text-dark300_light900">

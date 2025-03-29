@@ -219,3 +219,16 @@ export const previousMonthChats = dummyChats.filter(
     chat.timestamp > new Date(Date.now() - 31 * 24 * 60 * 60 * 1000) &&
     chat.timestamp <= new Date(Date.now() - 8 * 24 * 60 * 60 * 1000)
 );
+
+export const CROP_OPTIONS = [
+  {
+    value: "rice",
+    label: "Rice",
+    icon: "/icons/rice-plant.svg",
+  },
+  {
+    value: "wheat",
+    label: "Wheat",
+    icon: "/icons/wheat-plant.svg",
+  },
+];

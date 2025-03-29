@@ -13,6 +13,7 @@ import {
   HasVotedSchema,
   UpdateVoteCountSchema,
 } from "../validations";
+import getLanguageFromCookie from "../cookies";
 
 export async function updateVoteCount(
   params: UpdateVoteCountParams,
@@ -51,8 +52,10 @@ export async function updateVoteCount(
 }
 
 export async function createVote(
-  params: CreateVoteParams & { lng: string }
+  params: CreateVoteParams
 ): Promise<ActionResponse> {
+  const lng = await getLanguageFromCookie();
+
   const validationResult = await action({
     params,
     schema: CreateVoteSchema,
@@ -126,7 +129,7 @@ export async function createVote(
     await session.commitTransaction();
     session.endSession();
 
-    revalidatePath(ROUTES.QUESTION(params.lng, targetId));
+    revalidatePath(ROUTES.QUESTION(lng, targetId));
 
     return { success: true };
   } catch (error) {

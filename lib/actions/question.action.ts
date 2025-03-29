@@ -115,7 +115,7 @@ export async function getQuestion(
   const validationResult = await action({
     params,
     schema: GetQuestionSchema,
-    authorize: true,
+    authorize: false,
   });
 
   if (validationResult instanceof Error) {

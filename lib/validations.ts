@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const MAX_FILE_SIZE = 5 * 1024 * 1024;
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
 export const SignInSchema = z.object({
   email: z
     .string()
@@ -57,7 +65,14 @@ export const AskQuestionSchema = z.object({
     .max(100, { message: "Title cannot exceed 100 characters." }),
 
   content: z.string().min(1, { message: "Body is required." }),
-  image: z.string().url({ message: "Please provide a valid URL." }).optional(),
+  image: z
+    .instanceof(File, { message: "Image is required." })
+    .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    )
+    .optional(),
   crop: z.string().optional(),
 });
 
@@ -138,11 +153,25 @@ export const AnswerSchema = z.object({
   content: z
     .string()
     .min(20, { message: "Answer has to have more than 20 characters." }),
-  image: z.string().url({ message: "Please provide a valid URL." }).optional(),
+  image: z
+    .instanceof(File, { message: "Please upload a valid image file." })
+    .refine(
+      (file) => !file || file.size <= MAX_FILE_SIZE,
+      `Max image size is 5MB.`
+    )
+    .refine(
+      (file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    )
+    .optional(),
 });
 
-export const AnswerServerSchema = AnswerSchema.extend({
+export const AnswerServerSchema = z.object({
   questionId: z.string().min(1, { message: "Question ID is required." }),
+  content: z
+    .string()
+    .min(20, { message: "Answer has to have more than 20 characters." }),
+  image: z.string().url().optional(),
 });
 
 export const GetAnswersSchema = PaginatedSearchParamsSchema.extend({

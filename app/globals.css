@@ -456,6 +456,25 @@
     color: #36aa68 !important;
   }
 
+  .break-words {
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    /* For Firefox */
+    word-break: break-word;
+
+    /* Adds a hyphen where the word breaks, if supported */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .overflow-x-hidden {
+    overflow-x: hidden;
+  }
+
   .markdown pre {
     display: grid;
     width: 100%;
