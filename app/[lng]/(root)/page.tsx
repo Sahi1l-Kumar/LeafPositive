@@ -184,20 +184,16 @@ const Home: React.FC = () => {
 
   return (
     <div className="background-light850_dark100 min-h-screen flex flex-col">
-      <div className="relative w-full bg-gradient-to-b from-primary-100/50 to-transparent dark:from-dark-300/30 py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center text-center">
-            <h1 className="h1-bold text-dark100_light900 text-center mb-8">
-              {t("home.title")}
-            </h1>
-            <p className="paragraph-medium text-dark400_light700 max-w-xl">
-              {t("home.subtitle")}
-            </p>
-          </div>
+      <div className="container mx-auto px-4 pt-6 pb-8 flex-grow flex flex-col items-center">
+        <div className="w-full text-center mb-6">
+          <h1 className="h1-bold text-dark100_light900 mb-4">
+            {t("home.title")}
+          </h1>
+          <p className="paragraph-medium text-dark400_light700 max-w-xl mx-auto">
+            {t("home.subtitle")}
+          </p>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8 flex-grow flex flex-col items-center">
         <div className="card-wrapper rounded-lg p-6 md:p-8 max-w-3xl w-full shadow-light200_dark100">
           {!selectedCrop && (
             <div className="flex flex-col items-center animate-fade-in">
@@ -230,7 +226,7 @@ const Home: React.FC = () => {
                 ))}
               </div>
 
-              <div className="mt-12 w-full">
+              <div className="mt-8 w-full">
                 <h3 className="h3-semibold text-dark300_light900 mb-4 text-center">
                   {t("home.howItWorks")}
                 </h3>
