@@ -27,6 +27,7 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [diseaseContextUsed, setDiseaseContextUsed] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -40,12 +41,6 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    if (!isLoadingInitial && !error) {
-      inputRef.current?.focus();
-    }
-  }, [isLoadingInitial, error]);
-
   const fetchChatAndAnalyze = useCallback(async () => {
     if (!chatId) return;
 
@@ -55,9 +50,9 @@ const ChatPage = () => {
 
     try {
       const chatResult = await getChat({ chatId });
-
-      if (!chatResult.success || !chatResult.data)
+      if (!chatResult.success || !chatResult.data) {
         throw new Error(chatResult.error?.message || "Failed to load chat.");
+      }
 
       const fetchedChat = chatResult.data;
       setChatData(fetchedChat);
@@ -74,29 +69,14 @@ const ChatPage = () => {
       const firstUserMessage = fetchedChat.messages.find(
         (m) => m.sender === "user"
       );
-
-      let derivedCrop = "Plant";
-      if (firstUserMessage) {
-        if (firstUserMessage.content.toLowerCase().includes("rice"))
-          derivedCrop = "Rice";
-        else if (firstUserMessage.content.toLowerCase().includes("wheat"))
-          derivedCrop = "Wheat";
-        else if (firstUserMessage.content.toLowerCase().includes("tomato"))
-          derivedCrop = "Tomato";
-        else if (firstUserMessage.content.toLowerCase().includes("potato"))
-          derivedCrop = "Potato";
-        else if (firstUserMessage.content.toLowerCase().includes("cauliflower"))
-          derivedCrop = "Cauliflower";
-      }
-
-      setCurrentCrop(derivedCrop);
+      setCurrentCrop(firstUserMessage?.content || "Plant");
 
       const aiMessageWithDisease = fetchedChat.messages.find(
         (m) => m.sender === "ai" && m.detectedDisease
       );
-
       if (aiMessageWithDisease?.detectedDisease) {
         setDetectedDisease(aiMessageWithDisease.detectedDisease);
+        setDiseaseContextUsed(true);
       }
 
       setIsLoadingInitial(false);
@@ -114,35 +94,28 @@ const ChatPage = () => {
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!currentMessage.trim() || isTyping) return;
 
     const userMessage: UIMessage = { role: "user", content: currentMessage };
     setMessages((prev) => [...prev, userMessage]);
-
-    const questionToAsk = currentMessage;
     setCurrentMessage("");
     setIsTyping(true);
 
     try {
       await addMessage({
         chatId,
-        message: {
-          sender: "user",
-          content: questionToAsk,
-        },
+        message: { sender: "user", content: currentMessage },
       });
 
-      const contextForAI = `User is asking about their ${currentCrop || "plant"}. ${
-        detectedDisease
-          ? `The currently identified disease is ${detectedDisease}.`
-          : "No specific disease identified yet."
-      }`;
+      const context =
+        detectedDisease && diseaseContextUsed
+          ? `Focus specifically on ${currentMessage} regarding ${detectedDisease} in ${currentCrop}`
+          : `Provide ${detectedDisease ? "detailed " : ""}response for: ${currentMessage}`;
 
       const aiResult = await api.ai.getAnswer(
-        questionToAsk,
-        contextForAI,
-        detectedDisease || ""
+        currentMessage,
+        context,
+        diseaseContextUsed ? "" : detectedDisease || ""
       );
 
       if (!aiResult.success || !aiResult.data) {
@@ -151,43 +124,33 @@ const ChatPage = () => {
         );
       }
 
-      const diseaseMatch = aiResult.data.match(/\*\*(.*?)\*\*/);
-      const newDetectedDisease = diseaseMatch
-        ? diseaseMatch[1]
-        : detectedDisease;
+      const aiMessage: UIMessage = {
+        role: "ai",
+        content: aiResult.data,
+        detectedDisease: detectedDisease || undefined,
+      };
 
       await addMessage({
         chatId,
         message: {
           sender: "ai",
           content: aiResult.data,
-          detectedDisease: newDetectedDisease || undefined,
+          detectedDisease: detectedDisease || undefined,
         },
       });
 
-      const aiMessage: UIMessage = {
-        role: "ai",
-        content: aiResult.data,
-        detectedDisease: newDetectedDisease || undefined,
-      };
-
       setMessages((prev) => [...prev, aiMessage]);
-
-      if (newDetectedDisease && newDetectedDisease !== detectedDisease) {
-        setDetectedDisease(newDetectedDisease);
-      }
+      setDiseaseContextUsed(true);
     } catch (err) {
       console.error("Failed to get AI answer:", err);
-
       const errorMessage: UIMessage = {
         role: "ai",
-        content: `Sorry, I encountered an error: ${err instanceof Error ? err.message : "Please try again."}`,
+        content: `Error: ${err instanceof Error ? err.message : "Please try again."}`,
       };
-
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
-      setTimeout(() => inputRef.current?.focus(), 0);
+      inputRef.current?.focus();
     }
   };
 
@@ -365,7 +328,7 @@ const ChatPage = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="sticky bottom-0 w-full background-light900_dark200 border-t light-border shadow-dark-100">
+      <div className="sticky bottom-0 w-full background-light900_dark200 border-t light-border shadow-dark-100 rounded-lg">
         <div className="container mx-auto px-4 py-3">
           <form onSubmit={sendMessage} className="flex gap-2 max-w-3xl mx-auto">
             <input

@@ -19,36 +19,32 @@ export async function POST(req: Request) {
     let prompt = "";
 
     if (detectedDisease) {
-      prompt = `Generate a comprehensive markdown-formatted response about the plant disease: "${detectedDisease}".
-      
-      The user has uploaded an image of a plant with this disease. Please provide:
-      1. A brief description of the disease
-      2. Common symptoms and how to identify it
-      3. What causes this disease
-      4. Recommended treatments and remedies
-      5. Prevention methods
-      
-      If the user has asked a specific question: "${question}", address it in the context of this plant disease.
-      
-      Additional context: ${content}
-            
-      Provide the final answer in markdown format with appropriate headings and structure.`;
+      prompt = question.trim()
+        ? `Answer this specific question about ${detectedDisease}: "${question}"
+       Use this context: ${content}
+       Focus exclusively on the question while referencing the known disease.
+       Provide a concise markdown response without disease overview.`
+        : `Provide concise markdown overview of ${detectedDisease} including:
+       1. Brief description
+       2. Key symptoms
+       3. Treatments
+       4. Prevention
+       Context: ${content}`;
     } else {
-      prompt = `Generate a markdown-formatted response to the following question about plants: "${question}".
+      prompt = `Generate a concise markdown-formatted response to the following question about plants: "${question}".
       
-      Consider the provided context:
-      **Context:** ${content}
-            
-      Focus only on plant-related information, particularly plant diseases, care, and remedies. If the question is not related to plants, politely inform the user that you can only provide information about plants and their diseases.
+      Context: ${content}
       
-      Provide the final answer in markdown format with appropriate headings and structure.`;
+      Focus only on plant-related information (e.g., diseases, care, remedies). If unrelated, redirect politely to plant-related topics.
+      
+      Provide a brief and focused answer in markdown format.`;
     }
 
     const { text } = await generateText({
       model: google("gemini-2.0-flash-exp"),
       prompt: prompt,
       system:
-        "You are a specialized plant disease assistant that provides expert information on plant diseases, treatments, and care. Only answer questions related to plants and gardening. If asked about unrelated topics, politely redirect the conversation to plants. Use markdown formatting for clear, well-structured responses with appropriate headings, lists, and emphasis. Include scientific names where relevant and practical advice that gardeners can implement.",
+        "You are a specialized plant disease assistant that provides expert information on plant diseases, treatments, and care. Only answer questions related to plants and gardening. If asked about unrelated topics, politely redirect the conversation to plants. Use markdown formatting for clear, well-structured responses with appropriate headings, lists, and emphasis. Include scientific names where relevant and practical advice that gardeners can implement.Focus on the user's latest query. Only reference previously identified diseases if directly relevant to the current question.",
     });
 
     return NextResponse.json({ success: true, data: text }, { status: 200 });

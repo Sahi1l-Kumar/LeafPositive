@@ -147,11 +147,7 @@ const Home: React.FC = () => {
 
         const newChatId = result.data._id;
 
-        const aiResult = await api.ai.getAnswer(
-          "The disease detected by model.",
-          "",
-          detectedDisease
-        );
+        const aiResult = await api.ai.getAnswer("", "", detectedDisease);
         if (!aiResult.success || !aiResult.data) {
           console.error("Failed to get AI analysis:", aiResult.error);
         } else {

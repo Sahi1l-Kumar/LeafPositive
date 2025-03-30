@@ -79,12 +79,8 @@ export async function getChat(
   const validationResult = await action({
     params,
     schema: GetChatSchema,
-    authorize: false,
+    authorize: true,
   });
-
-  if (validationResult instanceof Error) {
-    return handleError(validationResult) as ErrorResponse;
-  }
 
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
@@ -114,17 +110,22 @@ export async function getChats(
   const validationResult = await action({
     params,
     schema: PaginatedSearchParamsSchema,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
 
+  const userId = validationResult?.session?.user?.id;
+
   const { page = 1, pageSize = 10, query, filter } = params;
   const skip = (Number(page) - 1) * pageSize;
   const limit = Number(pageSize);
 
-  const filterQuery: FilterQuery<typeof Chat> = {};
+  const filterQuery: FilterQuery<typeof Chat> = {
+    author: userId,
+  };
 
   if (filter === "recommended") {
     return { success: true, data: { chats: [], isNext: false } };
@@ -227,7 +228,7 @@ export async function getMessages(params: { chatId: string }): Promise<
   const validationResult = await action({
     params,
     schema: GetChatSchema,
-    authorize: false,
+    authorize: true,
   });
 
   if (validationResult instanceof Error) {

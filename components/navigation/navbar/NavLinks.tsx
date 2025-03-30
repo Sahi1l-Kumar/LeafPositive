@@ -28,6 +28,7 @@ const NavLinks = ({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const chatListRef = useRef<HTMLDivElement | null>(null);
+  const loadingTriggerRef = useRef<HTMLDivElement | null>(null);
   const { t, i18n } = useTranslation(lng, "translation");
 
   const fetchChats = async (pageNum = 1, query = "") => {
@@ -64,7 +65,19 @@ const NavLinks = ({
     };
 
     initializeChats();
-  }, [i18n.isInitialized]);
+
+    const handleRouteChange = () => {
+      if (pathname.includes("/chat/")) {
+        initializeChats();
+      }
+    };
+
+    window.addEventListener("popstate", handleRouteChange);
+
+    return () => {
+      window.removeEventListener("popstate", handleRouteChange);
+    };
+  }, [i18n.isInitialized, pathname]);
 
   // Load more chats when scrolling
   const loadMoreChats = useCallback(async () => {
@@ -91,7 +104,49 @@ const NavLinks = ({
     }
   }, [hasMore, isLoadingMore, page, searchQuery]);
 
-  // Handle scroll event for infinite scrolling
+  // Check if we need to load more chats immediately after initial load
+  useEffect(() => {
+    if (!isLoading && chats.length > 0 && chats.length < 10 && hasMore) {
+      loadMoreChats();
+    }
+  }, [isLoading, chats.length, hasMore, loadMoreChats]);
+
+  // Set up Intersection Observer for infinite scrolling
+  useEffect(() => {
+    if (!chatListRef.current || isLoading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          loadMoreChats();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    // Create or use the loading trigger element
+    if (!loadingTriggerRef.current) {
+      loadingTriggerRef.current = document.createElement("div");
+      loadingTriggerRef.current.className = "h-10 w-full";
+      chatListRef.current.appendChild(loadingTriggerRef.current);
+    }
+
+    if (loadingTriggerRef.current) {
+      observer.observe(loadingTriggerRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+      if (chatListRef.current && loadingTriggerRef.current) {
+        try {
+          chatListRef.current.removeChild(loadingTriggerRef.current);
+        } catch (e) {}
+        loadingTriggerRef.current = null;
+      }
+    };
+  }, [loadMoreChats, hasMore, isLoadingMore, isLoading, chats]);
+
+  // Handle scroll event as a backup for infinite scrolling
   useEffect(() => {
     const chatListElement = chatListRef.current;
     if (!chatListElement) return;
@@ -207,7 +262,7 @@ const NavLinks = ({
           </button>
         </div>
 
-        <div className="relative px-4 pb-2">
+        <div className="relative px-4 pb-2 max-sm:hidden">
           <div className="relative">
             <Search
               size={18}
@@ -226,7 +281,7 @@ const NavLinks = ({
 
       <div
         ref={chatListRef}
-        className="flex-1 overflow-y-auto px-2 custom-scrollbar"
+        className="flex-1 overflow-y-auto px-2 custom-scrollbar h-[calc(100vh-160px)]"
       >
         {chats.length === 0 ? (
           <p className="text-center py-4 text-dark400_light500">
@@ -244,8 +299,17 @@ const NavLinks = ({
 
         {isLoadingMore && (
           <div className="py-2 text-center">
-            <LoadingSpinner size="sm" />
+            <LoadingSpinner className="flex items-center justify-center h-full max-sm:mt-30 ml-30" />
           </div>
+        )}
+
+        {hasMore && !isLoadingMore && (
+          <button
+            onClick={loadMoreChats}
+            className="w-full py-2 text-center text-sm bg-light-700 dark:bg-dark-300 rounded-md my-2 hover:bg-light-800 dark:hover:bg-dark-400"
+          >
+            {t("chat.loadMore")}
+          </button>
         )}
       </div>
     </div>
