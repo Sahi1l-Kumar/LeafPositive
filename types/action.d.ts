@@ -1,5 +1,3 @@
-import { AddMessageSchema } from "@/lib/validations";
-
 interface SignInWithOAuthParams {
   provider: "google";
   providerAccountId: string;
@@ -21,6 +19,9 @@ interface AuthCredentials {
 interface CreateQuestionParams {
   title: string;
   content: string;
+  imageUrl?: string;
+  crop?: string;
+  image?: File;
 }
 
 interface EditQuestionParams extends CreateQuestionParams {
@@ -38,7 +39,8 @@ interface IncrementViewsParams {
 interface CreateAnswerParams {
   questionId: string;
   content: string;
-  image?: string;
+  imageUrl?: string;
+  image?: File;
 }
 
 interface GetAnswersParams extends PaginatedSearchParams {
@@ -69,7 +71,7 @@ interface CreateChatParams {
     content: string;
     imageUrl?: string;
     detectedDisease?: string;
-    timestamp: Date;
+    timestamp?: Date;
   };
 }
 
@@ -77,4 +79,12 @@ interface GetChatParams {
   chatId: string;
 }
 
-export type AddMessageParams = z.infer<typeof AddMessageSchema>;
+type AddMessageParams = {
+  chatId: string;
+  message: {
+    sender: "user" | "ai";
+    content: string;
+    imageUrl?: string;
+    detectedDisease?: string;
+  };
+};

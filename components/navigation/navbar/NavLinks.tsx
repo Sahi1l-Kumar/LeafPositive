@@ -151,7 +151,7 @@ const NavLinks = ({
 
   if (isLoading) {
     return (
-      <LoadingSpinner className="flex items-center justify-center h-full" />
+      <LoadingSpinner className="flex items-center justify-center h-full max-sm:mt-35 ml-35" />
     );
   }
 

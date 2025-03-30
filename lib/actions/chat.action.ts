@@ -14,11 +14,6 @@ import {
   PaginatedSearchParamsSchema,
 } from "../validations";
 import getLanguageFromCookie from "../cookies";
-import {
-  AddMessageParams,
-  CreateChatParams,
-  GetChatParams,
-} from "@/types/action";
 
 export async function createChat(
   params: CreateChatParams
@@ -144,6 +139,7 @@ export async function getChats(
 
     const chats = await Chat.find(filterQuery)
       .populate("title")
+      .sort({ createdAt: -1 })
       .lean()
       .skip(skip)
       .limit(limit);
@@ -214,5 +210,44 @@ export async function addMessage(
     return handleError(error) as ErrorResponse;
   } finally {
     await session.endSession();
+  }
+}
+
+export async function getMessages(params: { chatId: string }): Promise<
+  ActionResponse<
+    Array<{
+      sender: string;
+      content: string;
+      timestamp: Date;
+      imageUrl?: string;
+      detectedDisease?: string;
+    }>
+  >
+> {
+  const validationResult = await action({
+    params,
+    schema: GetChatSchema,
+    authorize: false,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { chatId } = validationResult.params!;
+
+  try {
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(chat.messages)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
   }
 }

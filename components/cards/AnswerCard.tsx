@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import Image from "next/image";
 
 import ROUTES from "@/constants/routes";
 import { hasVoted } from "@/lib/actions/vote.action";
@@ -8,8 +9,8 @@ import { getTimeStamp } from "@/lib/utils";
 import UserAvatar from "../UserAvatar";
 import Votes from "../votes/Votes";
 import getLanguageFromCookie from "@/lib/cookies";
-import Image from "next/image";
 import Preview from "../Preview";
+import { title } from "process";
 
 const AnswerCard = async ({
   _id,
@@ -18,7 +19,7 @@ const AnswerCard = async ({
   createdAt,
   upvotes,
   downvotes,
-  image,
+  imageUrl,
 }: Answer) => {
   const lng = await getLanguageFromCookie();
   const hasVotedPromise = hasVoted({
@@ -67,6 +68,19 @@ const AnswerCard = async ({
           </Suspense>
         </div>
       </div>
+
+      {imageUrl && (
+        <div className="sm:w-1/3 max-w-[200px]">
+          <div className="relative w-full pt-[100%] rounded-lg overflow-hidden">
+            <Image
+              src={imageUrl}
+              alt="Answer Image"
+              fill
+              className="object-cover"
+            />
+          </div>
+        </div>
+      )}
 
       <Preview content={content} />
     </article>

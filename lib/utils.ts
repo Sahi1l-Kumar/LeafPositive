@@ -89,3 +89,16 @@ export const groupChatsByDate = (chats: Chat[]): DateGroups => {
 
   return groups;
 };
+
+const extractCropFromMessage = (content: string): string => {
+  const cropNames = ["rice", "wheat", "potato", "tomato", "cauliflower"];
+  const lowerContent = content.toLowerCase();
+
+  for (const crop of cropNames) {
+    if (lowerContent.includes(crop)) {
+      return crop.charAt(0).toUpperCase() + crop.slice(1);
+    }
+  }
+
+  return "Plant";
+};

@@ -63,15 +63,11 @@ export const AskQuestionSchema = z.object({
     .string()
     .min(5, { message: "Title is required." })
     .max(100, { message: "Title cannot exceed 100 characters." }),
-
   content: z.string().min(1, { message: "Body is required." }),
-  image: z
-    .instanceof(File, { message: "Image is required." })
-    .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-    .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported."
-    )
+  image: z.any().optional(),
+  imageUrl: z
+    .string()
+    .url({ message: "Please provide a valid URL." })
     .optional(),
   crop: z.string().optional(),
 });
@@ -153,16 +149,10 @@ export const AnswerSchema = z.object({
   content: z
     .string()
     .min(20, { message: "Answer has to have more than 20 characters." }),
-  image: z
-    .instanceof(File, { message: "Please upload a valid image file." })
-    .refine(
-      (file) => !file || file.size <= MAX_FILE_SIZE,
-      `Max image size is 5MB.`
-    )
-    .refine(
-      (file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported."
-    )
+  image: z.any().optional(),
+  imageUrl: z
+    .string()
+    .url({ message: "Please provide a valid URL." })
     .optional(),
 });
 
@@ -171,7 +161,8 @@ export const AnswerServerSchema = z.object({
   content: z
     .string()
     .min(20, { message: "Answer has to have more than 20 characters." }),
-  image: z.string().url().optional(),
+  imageUrl: z.string().url().optional(),
+  image: z.any().optional(),
 });
 
 export const GetAnswersSchema = PaginatedSearchParamsSchema.extend({

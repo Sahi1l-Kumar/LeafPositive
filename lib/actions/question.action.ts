@@ -13,6 +13,7 @@ import {
   IncrementViewsSchema,
   PaginatedSearchParamsSchema,
 } from "../validations";
+import { Session } from "next-auth";
 
 export async function createQuestion(
   params: CreateQuestionParams
@@ -27,15 +28,18 @@ export async function createQuestion(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { title, content, image, crop } = validationResult.params!;
-  const userId = validationResult?.session?.user?.id;
+  const { title, content, imageUrl, crop } = (
+    validationResult as { params: CreateQuestionParams }
+  ).params!;
+  const userId = (validationResult as { session: Session | null }).session?.user
+    ?.id;
 
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const [question] = await Question.create(
-      [{ title, content, author: userId, image, crop }],
+      [{ title, content, author: userId, imageUrl, crop }],
       { session }
     );
 
@@ -67,8 +71,11 @@ export async function editQuestion(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { title, content, questionId, image, crop } = validationResult.params!;
-  const userId = validationResult?.session?.user?.id;
+  const { title, content, questionId, imageUrl, crop } = (
+    validationResult as { params: EditQuestionParams }
+  ).params!;
+  const userId = (validationResult as { session: Session | null }).session?.user
+    ?.id;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -87,12 +94,12 @@ export async function editQuestion(
     if (
       question.title !== title ||
       question.content !== content ||
-      question.image !== image ||
+      question.imageUrl !== imageUrl ||
       question.crop !== crop
     ) {
       question.title = title;
       question.content = content;
-      question.image = image;
+      question.imageUrl = imageUrl;
       question.crop = crop;
       await question.save({ session });
     }
@@ -126,13 +133,15 @@ export async function getQuestion(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { questionId } = validationResult.params!;
+  const { questionId } = (validationResult as { params: GetQuestionParams })
+    .params!;
 
   try {
-    const question = await Question.findById(questionId).populate(
-      "author",
-      "_id name image"
-    );
+    const question = await Question.findById(questionId)
+      .populate("author", "_id name image")
+      .select(
+        "title content createdAt upvotes downvotes answers views imageUrl crop"
+      );
 
     if (!question) {
       throw new Error("Question not found");
@@ -224,7 +233,8 @@ export async function incrementViews(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { questionId } = validationResult.params!;
+  const { questionId } = (validationResult as { params: IncrementViewsParams })
+    .params!;
 
   try {
     const question = await Question.findById(questionId);

@@ -6,11 +6,13 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { api } from "@/lib/api";
-import { getChat } from "@/lib/actions/chat.action";
+import { getChat, addMessage } from "@/lib/actions/chat.action";
 
 interface UIMessage {
   role: "user" | "ai";
   content: string;
+  imageUrl?: string;
+  detectedDisease?: string;
 }
 
 const ChatPage = () => {
@@ -27,7 +29,16 @@ const ChatPage = () => {
   const [isTyping, setIsTyping] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const initialAiFetchDone = useRef(false);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     if (!isLoadingInitial && !error) {
@@ -36,7 +47,7 @@ const ChatPage = () => {
   }, [isLoadingInitial, error]);
 
   const fetchChatAndAnalyze = useCallback(async () => {
-    if (!chatId || initialAiFetchDone.current) return;
+    if (!chatId) return;
 
     setIsLoadingInitial(true);
     setError(null);
@@ -54,6 +65,8 @@ const ChatPage = () => {
       const uiMessages: UIMessage[] = fetchedChat.messages.map((m) => ({
         role: m.sender,
         content: m.content,
+        imageUrl: m.imageUrl,
+        detectedDisease: m.detectedDisease,
       }));
 
       setMessages(uiMessages);
@@ -68,62 +81,30 @@ const ChatPage = () => {
           derivedCrop = "Rice";
         else if (firstUserMessage.content.toLowerCase().includes("wheat"))
           derivedCrop = "Wheat";
+        else if (firstUserMessage.content.toLowerCase().includes("tomato"))
+          derivedCrop = "Tomato";
+        else if (firstUserMessage.content.toLowerCase().includes("potato"))
+          derivedCrop = "Potato";
+        else if (firstUserMessage.content.toLowerCase().includes("cauliflower"))
+          derivedCrop = "Cauliflower";
       }
 
       setCurrentCrop(derivedCrop);
-      setIsLoadingInitial(false);
 
-      const lastMessage = fetchedChat.messages[fetchedChat.messages.length - 1];
+      const aiMessageWithDisease = fetchedChat.messages.find(
+        (m) => m.sender === "ai" && m.detectedDisease
+      );
 
-      if (lastMessage?.sender === "user") {
-        initialAiFetchDone.current = true;
-        setIsTyping(true);
-
-        const initialContext =
-          firstUserMessage?.content ||
-          `Initial analysis request for ${derivedCrop}.`;
-
-        const initialQuestion = "Analyze plant disease";
-        const fullContext = `Please identify the potential disease and its description based on: ${initialContext}`;
-        const aiResult = await api.ai.getAnswer(
-          initialQuestion,
-          fullContext,
-          ""
-        );
-
-        if (!aiResult.success || !aiResult.data) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: "ai",
-              content: `Sorry, I couldn't perform the initial analysis. Error: ${aiResult.error?.message || "Unknown AI error"}`,
-            },
-          ]);
-        } else {
-          const aiResponseContent = aiResult.data;
-          setMessages((prev) => [
-            ...prev,
-            { role: "ai", content: aiResponseContent },
-          ]);
-
-          const diseaseMatch = aiResponseContent.match(/\*\*(.*?)\*\*/);
-          if (diseaseMatch && diseaseMatch[1]) {
-            setDetectedDisease(diseaseMatch[1]);
-          }
-        }
-
-        setIsTyping(false);
-      } else if (lastMessage?.sender === "ai") {
-        const diseaseMatch = lastMessage.content.match(/\*\*(.*?)\*\*/);
-        if (diseaseMatch && diseaseMatch[1]) {
-          setDetectedDisease(diseaseMatch[1]);
-        }
+      if (aiMessageWithDisease?.detectedDisease) {
+        setDetectedDisease(aiMessageWithDisease.detectedDisease);
       }
+
+      setIsLoadingInitial(false);
+      initialAiFetchDone.current = true;
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : "Failed.");
+      setError(err instanceof Error ? err.message : "Failed to load chat.");
       setIsLoadingInitial(false);
-      setIsTyping(false);
     }
   }, [chatId]);
 
@@ -131,7 +112,6 @@ const ChatPage = () => {
     fetchChatAndAnalyze();
   }, [fetchChatAndAnalyze]);
 
-  // Send subsequent user messages
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -145,6 +125,14 @@ const ChatPage = () => {
     setIsTyping(true);
 
     try {
+      await addMessage({
+        chatId,
+        message: {
+          sender: "user",
+          content: questionToAsk,
+        },
+      });
+
       const contextForAI = `User is asking about their ${currentCrop || "plant"}. ${
         detectedDisease
           ? `The currently identified disease is ${detectedDisease}.`
@@ -163,8 +151,31 @@ const ChatPage = () => {
         );
       }
 
-      const aiMessage: UIMessage = { role: "ai", content: aiResult.data };
+      const diseaseMatch = aiResult.data.match(/\*\*(.*?)\*\*/);
+      const newDetectedDisease = diseaseMatch
+        ? diseaseMatch[1]
+        : detectedDisease;
+
+      await addMessage({
+        chatId,
+        message: {
+          sender: "ai",
+          content: aiResult.data,
+          detectedDisease: newDetectedDisease || undefined,
+        },
+      });
+
+      const aiMessage: UIMessage = {
+        role: "ai",
+        content: aiResult.data,
+        detectedDisease: newDetectedDisease || undefined,
+      };
+
       setMessages((prev) => [...prev, aiMessage]);
+
+      if (newDetectedDisease && newDetectedDisease !== detectedDisease) {
+        setDetectedDisease(newDetectedDisease);
+      }
     } catch (err) {
       console.error("Failed to get AI answer:", err);
 
@@ -238,6 +249,15 @@ const ChatPage = () => {
                   : "background-light800_dark400 text-dark300_light900 rounded-bl-none border light-border"
               }`}
             >
+              {msg.imageUrl && (
+                <div className="mb-2">
+                  <img
+                    src={msg.imageUrl}
+                    alt="Uploaded plant image"
+                    className="rounded-lg object-cover max-w-full h-auto"
+                  />
+                </div>
+              )}
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -341,6 +361,8 @@ const ChatPage = () => {
             </div>
           </div>
         )}
+
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="sticky bottom-0 w-full background-light900_dark200 border-t light-border shadow-dark-100">

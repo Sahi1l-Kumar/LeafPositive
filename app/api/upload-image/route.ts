@@ -1,59 +1,56 @@
-// import { Storage } from "@google-cloud/storage";
-// import { NextApiRequest, NextApiResponse } from "next";
-// import formidable from "formidable";
+import { NextResponse } from "next/server";
+import {
+  S3Client,
+  PutObjectCommand,
+  ObjectCannedACL,
+} from "@aws-sdk/client-s3";
 
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
 
-// const storage = new Storage({
-//   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-//   credentials: JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS || "{}"),
-// });
+export async function POST(request: Request) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
 
-// const bucket = storage.bucket(process.env.GOOGLE_CLOUD_BUCKET_NAME || "");
+    if (!file) {
+      return NextResponse.json(
+        { success: false, error: "No file provided" },
+        { status: 400 }
+      );
+    }
 
-// export default async function handler(
-//   req: NextApiRequest,
-//   res: NextApiResponse
-// ) {
-//   if (req.method !== "POST") {
-//     return res.status(405).json({ error: "Method not allowed" });
-//   }
+    const fileBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(fileBuffer);
 
-//   const form = new formidable.IncomingForm();
-//   form.parse(req, async (err, fields, files) => {
-//     if (err) {
-//       return res.status(500).json({ error: "Error parsing form data" });
-//     }
+    const key = `uploads/${Date.now()}-${file.name.replace(/\s/g, "-")}`;
 
-//     const file = files.image as formidable.File;
-//     if (!file) {
-//       return res.status(400).json({ error: "No file uploaded" });
-//     }
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: key,
+      Body: buffer,
+      ContentType: file.type,
+    };
 
-//     try {
-//       const blob = bucket.file(
-//         `uploads/${Date.now()}-${file.originalFilename}`
-//       );
-//       const blobStream = blob.createWriteStream();
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
 
-//       blobStream.on("error", (error) => {
-//         res
-//           .status(500)
-//           .json({ error: "Error uploading to Google Cloud Storage" });
-//       });
+    const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
 
-//       blobStream.on("finish", () => {
-//         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-//         res.status(200).json({ url: publicUrl });
-//       });
-
-//       blobStream.end(await fs.promises.readFile(file.filepath));
-//     } catch (error) {
-//       res.status(500).json({ error: "Error uploading image" });
-//     }
-//   });
-// }
+    return NextResponse.json({
+      success: true,
+      imageUrl,
+    });
+  } catch (error: any) {
+    console.error("Error uploading to S3:", error);
+    return NextResponse.json(
+      { success: false, error: error.message || "Failed to upload image" },
+      { status: 500 }
+    );
+  }
+}

@@ -35,10 +35,10 @@ const RootLayout = async ({
   params,
 }: {
   children: ReactNode;
-  params: { lng?: string };
+  params: Promise<{ lng: string }>;
 }) => {
   const session = await auth();
-  const lng = params.lng || "en";
+  const { lng } = await params;
 
   return (
     <html lang={lng} dir={lng ? dir(lng) : undefined} suppressHydrationWarning>

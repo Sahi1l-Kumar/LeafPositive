@@ -27,7 +27,7 @@ export async function createAnswer(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { content, image, questionId } = validationResult.params!;
+  const { content, imageUrl, questionId } = validationResult.params!;
   const userId = validationResult?.session?.user?.id;
 
   const session = await mongoose.startSession();
@@ -44,7 +44,7 @@ export async function createAnswer(
           author: userId,
           question: questionId,
           content,
-          image,
+          imageUrl,
         },
       ],
       { session }

@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // Correct import for App Router
+import { useRouter } from "next/navigation";
 import React, { useState, useRef, useEffect, useTransition } from "react";
 
-// --- Server Action & Helpers ---
-import { createChat } from "@/lib/actions/chat.action"; // Adjust path as needed
+import { addMessage, createChat } from "@/lib/actions/chat.action";
 import { CROP_OPTIONS } from "@/constants";
+import { LoadingSpinner } from "@/components/Loader";
+import { api } from "@/lib/api";
 
 const Home: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
@@ -14,65 +15,57 @@ const Home: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const [isPending, startTransition] = useTransition(); // State for Server Action loading
-
-  // --- Event Handlers ---
+  const [isPending, startTransition] = useTransition();
 
   const handleCropSelect = (cropValue: string) => {
     setSelectedCrop(cropValue);
-    setFile(null); // Reset file when crop changes
-    setPreview(null); // Reset preview
-    setError(null); // Clear errors
+    setFile(null);
+    setPreview(null);
+    setError(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      // Basic Validation
       if (selectedFile.size > 10 * 1024 * 1024) {
-        // 10MB limit
         setError("File size exceeds 10MB limit.");
         setFile(null);
         setPreview(null);
-        e.target.value = ""; // Clear the file input
+        e.target.value = "";
         return;
       }
       if (!selectedFile.type.startsWith("image/")) {
-        // Check MIME type
         setError(
           "Please upload a valid image file (PNG, JPG, JPEG, WEBP, etc.)."
         );
         setFile(null);
         setPreview(null);
-        e.target.value = ""; // Clear the file input
+        e.target.value = "";
         return;
       }
 
       setFile(selectedFile);
-      // Create and manage preview URL
       if (preview) {
-        URL.revokeObjectURL(preview); // Revoke previous preview URL
+        URL.revokeObjectURL(preview);
       }
       const previewUrl = URL.createObjectURL(selectedFile);
       setPreview(previewUrl);
-      setError(null); // Clear previous errors
+      setError(null);
     }
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // Optional: Add visual feedback for drag over
   };
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setError(null); // Clear error on drop
+    setError(null);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
-      // Apply same validation as handleFileChange
       if (droppedFile.size > 10 * 1024 * 1024) {
         setError("File size exceeds 10MB limit.");
         setFile(null);
@@ -103,199 +96,220 @@ const Home: React.FC = () => {
     }
     setFile(null);
     setPreview(null);
-    // Also clear the file input visually if possible (though tricky)
     const fileInput = document.getElementById(
       "file-upload-input"
     ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
 
-  // --- Submit Handler ---
   const handleSubmit = async () => {
-    // Validation before submitting
     if (!selectedCrop) {
       setError("Please select a crop first.");
       return;
     }
-    // Modify this check if image becomes truly optional
     if (!file) {
       setError("Please upload an image to analyze.");
       return;
     }
-    setError(null); // Clear previous errors
+    setError(null);
 
-    // Use startTransition for the Server Action call
     startTransition(async () => {
       try {
-        let imageUrl: string | undefined = undefined;
+        const uploadResponse = await api.uploadImage(file);
 
-        // 1. Upload Image (Simulated Step - Replace with actual implementation)
-        // This step is crucial if your backend needs the image URL stored
-        console.log("Attempting image upload simulation for:", file.name);
-        // const uploadResult = await uploadImage(file);
-        // if (!uploadResult.success || !uploadResult.data?.url) {
-        //   throw new Error(
-        //     uploadResult.error?.message || "Image upload failed."
-        //   );
-        // }
-        // imageUrl = uploadResult.data.url;
-        console.log("Simulated Image URL obtained:", imageUrl);
-        // --- End Simulation ---
-
-        // 2. Prepare parameters for the createChat Server Action
-        const initialContent = `Analyze the uploaded image for ${selectedCrop}. Image URL: ${imageUrl}`;
-        const params = {
-          // title: `${selectedCrop.charAt(0).toUpperCase() + selectedCrop.slice(1)} Analysis Request`, // Example title
-          message: {
-            sender: "user" as const, // Important literal type
-            content: initialContent,
-            imageUrl: imageUrl, // Pass the URL obtained from upload
-          },
-          // Optionally pass crop type if your action/schema supports it
-          // cropType: selectedCrop,
-        };
-
-        console.log("Calling createChat Server Action with params:", params);
-
-        // 3. Call the Server Action
-        const result = await createChat(params);
-        console.log("Server Action createChat result:", result);
-
-        // 4. Handle the Server Action result
-        if (!result.success || !result.data?._id) {
-          // Check for success and data._id
-          throw new Error(
-            result.error?.message || "Failed to initialize chat session."
-          );
+        if (!uploadResponse.success || !uploadResponse.imageUrl) {
+          throw new Error("Failed to upload image to storage.");
         }
 
-        // 5. Navigate to the newly created chat page on success
+        const imageUrl = uploadResponse.imageUrl;
+        const detectionResponse = await api.detectDisease(file, selectedCrop);
+
+        if (!detectionResponse.success || !detectionResponse.category) {
+          throw new Error("Failed to detect disease.");
+        }
+        const detectedDisease = detectionResponse.category;
+
+        const initialContent = `${selectedCrop}`;
+        const createChatParams = {
+          title: `${selectedCrop.charAt(0).toUpperCase() + selectedCrop.slice(1)} Analysis`,
+          message: {
+            sender: "user" as const,
+            content: initialContent,
+            imageUrl: imageUrl,
+          },
+        };
+
+        const result = await createChat(createChatParams);
+
+        if (!result.success || !result.data?._id) {
+          throw new Error(result.error?.message || "Failed to create chat.");
+        }
+
         const newChatId = result.data._id;
-        console.log(
-          "Successfully created chat. Navigating to chat ID:",
-          newChatId
+
+        const aiResult = await api.ai.getAnswer(
+          "The disease detected by model.",
+          "",
+          detectedDisease
         );
-        router.push(`en/chat/${newChatId}`); // Navigate using the ID from the response
+        if (!aiResult.success || !aiResult.data) {
+          console.error("Failed to get AI analysis:", aiResult.error);
+        } else {
+          await addMessage({
+            chatId: newChatId,
+            message: {
+              sender: "ai",
+              content: aiResult.data,
+              detectedDisease: detectedDisease,
+            },
+          });
+        }
+        router.push(`en/chat/${newChatId}`);
       } catch (err: any) {
         console.error("Submission process failed:", err);
         setError(
           err.message || "An unexpected error occurred during submission."
         );
-        // isPending automatically becomes false after the transition completes or errors
       }
     });
   };
 
-  // --- Effect for cleaning up preview URL ---
   useEffect(() => {
-    // This function runs when the component unmounts or when `preview` changes.
     return () => {
       if (preview) {
         URL.revokeObjectURL(preview);
-        console.log("Revoked preview URL:", preview);
       }
     };
-  }, [preview]); // Dependency array ensures cleanup runs when `preview` changes
+  }, [preview]);
 
-  // --- JSX Rendering ---
   return (
-    // Apply base background and ensure min height covers screen
     <div className="background-light850_dark100 min-h-screen flex flex-col">
-      {/* Centered container */}
-      <div className="container mx-auto px-4 py-8 flex-grow flex flex-col items-center">
-        {/* Main Title */}
-        <h1 className="h1-bold text-dark100_light900 text-center mb-8">
-          Leaf Positive
-        </h1>
+      <div className="relative w-full bg-gradient-to-b from-primary-100/50 to-transparent dark:from-dark-300/30 py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center text-center">
+            <h1 className="h1-bold text-dark100_light900 text-center mb-8">
+              Leaf Positive
+            </h1>
+            <p className="paragraph-medium text-dark400_light700 max-w-xl">
+              AI-powered plant disease detection and treatment recommendations
+              for healthier crops
+            </p>
+          </div>
+        </div>
+      </div>
 
-        {/* Card Wrapper for content */}
-        <div className="card-wrapper rounded-lg p-6 md:p-8 max-w-3xl w-full">
-          {/* Step 1: Crop Selection UI */}
+      <div className="container mx-auto px-4 py-8 flex-grow flex flex-col items-center">
+        <div className="card-wrapper rounded-lg p-6 md:p-8 max-w-3xl w-full shadow-light200_dark100">
           {!selectedCrop && (
             <div className="flex flex-col items-center animate-fade-in">
-              {" "}
-              {/* Added simple animation */}
-              <h2 className="h3-bold text-dark300_light900 mb-6">
-                1. Select Your Crop
+              <h2 className="h2-bold text-dark300_light900 mb-6 text-center">
+                Select Your Crop
               </h2>
-              {/* Grid layout for crop options */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full max-w-md">
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 w-full max-w-2xl mx-auto">
                 {CROP_OPTIONS.map((crop) => (
                   <button
                     key={crop.value}
                     onClick={() => handleCropSelect(crop.value)}
                     className="flex flex-col items-center p-4 border light-border rounded-lg hover:bg-light-700/50 dark:hover:bg-dark-400/50 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-dark-100"
                   >
-                    {/* Crop Icon */}
                     <Image
                       src={crop.icon}
-                      alt="" // Alt text decorative here as label is below
+                      alt=""
                       width={48}
                       height={48}
-                      className="mb-2 h-12 w-12 object-contain" // Ensure consistent size
-                      // Basic error handling for icons
+                      className="mb-2 h-12 w-12 object-contain"
                       onError={(e) => {
                         e.currentTarget.src = "/images/default-logo.svg";
                         e.currentTarget.alt = "Placeholder icon";
                       }}
                     />
-                    {/* Crop Label */}
                     <span className="paragraph-semibold text-dark400_light700 text-center">
                       {crop.label}
                     </span>
                   </button>
                 ))}
               </div>
+
+              <div className="mt-12 w-full">
+                <h3 className="h3-semibold text-dark300_light900 mb-4 text-center">
+                  How It Works
+                </h3>
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                  <div className="flex-1 flex flex-col items-center p-4 background-light800_dark300 rounded-lg">
+                    <div className="w-10 h-10 rounded-full primary-gradient flex-center mb-3">
+                      <span className="text-light-900 font-bold">1</span>
+                    </div>
+                    <h4 className="paragraph-semibold mb-2">Select Crop</h4>
+                    <p className="text-dark400_light700 text-center text-sm">
+                      Choose your crop type for accurate analysis
+                    </p>
+                  </div>
+
+                  <div className="flex-1 flex flex-col items-center p-4 background-light800_dark300 rounded-lg">
+                    <div className="w-10 h-10 rounded-full primary-gradient flex-center mb-3">
+                      <span className="text-light-900 font-bold">2</span>
+                    </div>
+                    <h4 className="paragraph-semibold mb-2">Upload Image</h4>
+                    <p className="text-dark400_light700 text-center text-sm">
+                      Upload a clear photo of your plant
+                    </p>
+                  </div>
+
+                  <div className="flex-1 flex flex-col items-center p-4 background-light800_dark300 rounded-lg">
+                    <div className="w-10 h-10 rounded-full primary-gradient flex-center mb-3">
+                      <span className="text-light-900 font-bold">3</span>
+                    </div>
+                    <h4 className="paragraph-semibold mb-2">Get Analysis</h4>
+                    <p className="text-dark400_light700 text-center text-sm">
+                      Receive AI-powered disease detection and treatment advice
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Step 2: Image Upload UI (Conditional) */}
           {selectedCrop && (
             <div className="flex flex-col items-center animate-fade-in">
-              {" "}
-              {/* Added simple animation */}
-              {/* Header for Step 2 with option to change crop */}
-              <div className="flex justify-between w-full items-center mb-4 md:mb-6">
-                <h2 className="h3-bold text-dark300_light900">
-                  2. Upload Plant Image
+              <div className="flex justify-between w-full items-center mb-6">
+                <h2 className="h2-bold text-dark300_light900">
+                  Upload Plant Image
                 </h2>
                 <button
-                  onClick={() => handleCropSelect(null)} // Reset selection
-                  className="text-sm text-primary-500 hover:underline focus:outline-none"
-                  aria-label={`Change selected crop from ${CROP_OPTIONS.find((c) => c.value === selectedCrop)?.label || "current selection"}`}
+                  onClick={() => setSelectedCrop(null)}
+                  className="text-sm text-dark100_light900 hover:underline focus:outline-none flex items-center gap-1"
                 >
+                  <Image
+                    src="/icons/arrow-left.svg"
+                    alt="arrow-left"
+                    width={18}
+                    height={18}
+                    className="invert-colors"
+                  />
                   Change Crop (
                   {CROP_OPTIONS.find((c) => c.value === selectedCrop)?.label})
                 </button>
               </div>
-              {/* Image Upload Area */}
+
               <div className="w-full max-w-md">
-                {/* Conditional rendering: Show dropzone or preview */}
                 {!preview ? (
-                  // Dropzone Label
                   <label
-                    htmlFor="file-upload-input" // Associate label with input
+                    htmlFor="file-upload-input"
                     className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed light-border rounded-lg cursor-pointer background-light800_dark300 hover:bg-light-700/30 dark:hover:bg-dark-300/50 transition-colors"
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
-                      {/* Upload Icon */}
-                      <svg
-                        className="w-10 h-10 mb-3 text-dark400_light700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        ></path>
-                      </svg>
-                      {/* Upload Text */}
+                      <div className="w-16 h-16 mb-3 flex-center rounded-full bg-primary-100 dark:bg-dark-400">
+                        <Image
+                          src="icons/upload.svg"
+                          alt="Upload Image"
+                          width={18}
+                          height={18}
+                          className="invert-colors"
+                        />
+                      </div>
                       <p className="mb-2 text-sm text-dark400_light700">
                         <span className="font-semibold text-primary-500">
                           Click to upload
@@ -306,54 +320,40 @@ const Home: React.FC = () => {
                         PNG, JPG, WEBP, etc. (MAX 10MB)
                       </p>
                     </div>
-                    {/* Hidden File Input */}
                     <input
-                      id="file-upload-input" // ID for label association
+                      id="file-upload-input"
                       type="file"
                       className="hidden"
-                      accept="image/*" // Accept all image types
+                      accept="image/*"
                       onChange={handleFileChange}
                     />
                   </label>
                 ) : (
-                  // Image Preview Area
-                  <div className="relative h-64 w-full overflow-hidden rounded-lg border light-border group">
+                  <div className="relative h-64 w-full overflow-hidden rounded-lg border light-border group shadow-light100_dark100">
                     <Image
-                      src={preview} // Use the state variable for the preview URL
+                      src={preview}
                       alt="Plant image preview"
-                      layout="fill" // Fill the container
-                      objectFit="cover" // Cover the area, might crop
+                      layout="fill"
+                      objectFit="cover"
                     />
-                    {/* Clear Preview Button */}
                     <button
                       onClick={handleClearPreview}
-                      className="absolute top-2 right-2 z-10 p-1.5 bg-black/40 text-white rounded-full hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white opacity-70 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 z-10 p-1.5 bg-black/40 dark:bg-white/40 text-white rounded-full hover:bg-black/60 dark:hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-white opacity-70 group-hover:opacity-100 transition-opacity"
                       aria-label="Clear image preview"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <Image
+                        src="icons/close.svg"
+                        alt="Remove Image"
+                        width={18}
+                        height={18}
+                      />
                     </button>
                   </div>
                 )}
 
-                {/* File Details and Submit Button Area (Conditional) */}
-                {/* Show this section only when a crop is selected */}
                 <div className="mt-4 w-full space-y-2">
-                  {/* Display file info if a file is selected */}
                   {preview && file && (
-                    <div className="flex items-center justify-between text-xs px-1">
+                    <div className="flex items-center justify-between text-xs px-1 background-light700_dark400 p-2 rounded">
                       <p
                         className="text-dark400_light700 truncate max-w-[70%]"
                         title={file.name}
@@ -365,62 +365,32 @@ const Home: React.FC = () => {
                       </p>
                     </div>
                   )}
-                  {/* Submit Button */}
+
                   <button
                     onClick={handleSubmit}
-                    // Disable button if a Server Action is pending, no crop is selected, or no file is selected
                     disabled={isPending || !selectedCrop || !file}
-                    className="w-full primary-gradient text-light-900 py-3 px-6 rounded-lg flex items-center justify-center disabled:opacity-60 transition-opacity h-[48px]" // Added fixed height for consistency
+                    className="w-full primary-gradient text-light-900 py-3 px-6 rounded-lg flex items-center justify-center disabled:opacity-60 transition-all duration-300 h-[48px] shadow-light100_dark100 hover:shadow-lg"
                   >
                     {isPending ? (
-                      // Loading State
                       <>
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
+                        <LoadingSpinner className="mr-1" />
                         Processing...
                       </>
                     ) : (
-                      // Default State
                       <div className="flex items-center paragraph-semibold">
                         Start Analysis
-                        <svg
-                          className="ml-2 w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                          ></path>
-                        </svg>
+                        <Image
+                          src="icons/arrow-right.svg"
+                          alt="arrow right"
+                          width={18}
+                          height={18}
+                          className="ml-2"
+                        />
                       </div>
                     )}
                   </button>
                 </div>
 
-                {/* Error Message Display */}
                 {error && (
                   <p
                     className="text-red-500 text-sm mt-4 text-center"

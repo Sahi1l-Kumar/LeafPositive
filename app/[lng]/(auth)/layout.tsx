@@ -5,16 +5,10 @@ import SocialAuthForm from "@/components/forms/SocialAuthForm";
 
 interface AuthLayoutProps {
   children: ReactNode;
-  lng: string;
+  params: Promise<{ lng: string }>;
 }
 
-const AuthLayout = async ({
-  children,
-  params,
-}: {
-  children: ReactNode;
-  params: Promise<{ lng: string }>;
-}) => {
+const AuthLayout = async ({ children, params }: AuthLayoutProps) => {
   const { lng } = await params;
   const { t } = await useTranslation(lng, "translation");
 

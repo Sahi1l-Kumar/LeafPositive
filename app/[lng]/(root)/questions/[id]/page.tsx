@@ -14,6 +14,7 @@ import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { hasVoted } from "@/lib/actions/vote.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import Preview from "@/components/Preview";
+import Image from "next/image";
 
 const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   const { id, lng } = await params;
@@ -42,7 +43,8 @@ const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
     targetType: "question",
   });
 
-  const { author, createdAt, answers, views, content, title } = question;
+  const { author, createdAt, answers, views, content, title, imageUrl } =
+    question;
 
   return (
     <>
@@ -105,6 +107,19 @@ const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
           textStyles="small-regular text-dark400_light700"
         />
       </div>
+
+      {imageUrl && (
+        <div className="sm:w-1/3 max-w-[200px]">
+          <div className="relative w-full pt-[100%] rounded-lg overflow-hidden">
+            <Image
+              src={imageUrl}
+              alt="Question Image"
+              fill
+              className="object-cover"
+            />
+          </div>
+        </div>
+      )}
 
       <Preview content={content} />
 

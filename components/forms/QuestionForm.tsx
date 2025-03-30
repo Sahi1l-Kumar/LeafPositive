@@ -12,6 +12,7 @@ import ROUTES from "@/constants/routes";
 import { toast } from "sonner";
 import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { AskQuestionSchema } from "@/lib/validations";
+import { api } from "@/lib/api";
 
 import { Button } from "../ui/button";
 import {
@@ -78,15 +79,50 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
     data: z.infer<typeof AskQuestionSchema>
   ) => {
     startTransition(async () => {
-      if (isEdit && question) {
-        const result = await editQuestion({
-          questionId: question?._id,
+      try {
+        let imageUrl;
+        if (data.image instanceof File) {
+          const uploadResponse = await api.uploadImage(data.image);
+
+          if (!uploadResponse.success || !uploadResponse.imageUrl) {
+            throw new Error("Failed to upload image to storage.");
+          }
+
+          imageUrl = uploadResponse.imageUrl;
+        }
+
+        const updatedData = {
           ...data,
-        });
+          imageUrl: imageUrl,
+        };
+
+        if (isEdit && question) {
+          const result = await editQuestion({
+            questionId: question?._id,
+            ...updatedData,
+          });
+
+          if (result.success) {
+            toast("Success", {
+              description: "Question updated successfully",
+            });
+
+            if (result.data)
+              router.push(ROUTES.QUESTION(lng, result.data._id as string));
+          } else {
+            toast.error(`Error ${result.status}`, {
+              description: result.error?.message || "Something went wrong",
+            });
+          }
+
+          return;
+        }
+
+        const result = await createQuestion(updatedData);
 
         if (result.success) {
           toast("Success", {
-            description: "Question updated successfully",
+            description: "Question created successfully",
           });
 
           if (result.data) router.push(ROUTES.QUESTION(lng, result.data._id));
@@ -95,21 +131,9 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
             description: result.error?.message || "Something went wrong",
           });
         }
-
-        return;
-      }
-
-      const result = await createQuestion(data);
-
-      if (result.success) {
-        toast("Success", {
-          description: "Question created successfully",
-        });
-
-        if (result.data) router.push(ROUTES.QUESTION(lng, result.data._id));
-      } else {
-        toast.error(`Error ${result.status}`, {
-          description: result.error?.message || "Something went wrong",
+      } catch (err: any) {
+        toast.error("Error", {
+          description: err.message || "Something went wrong",
         });
       }
     });
@@ -301,11 +325,6 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
               Select your crop
             </DialogTitle>
           </DialogHeader>
-          <Input
-            type="text"
-            placeholder="Search"
-            className="paragraph-regular background-light800_dark400 text-dark300_light700 mb-4"
-          />
           <div className="grid grid-cols-3 gap-4">
             {CROP_OPTIONS.map((option) => (
               <div

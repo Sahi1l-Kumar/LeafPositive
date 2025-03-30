@@ -1,12 +1,27 @@
 export const CROP_OPTIONS = [
   {
-    value: "rice",
+    value: "Rice",
     label: "Rice",
-    icon: "/icons/rice-plant.svg",
+    icon: "/icons/rice.svg",
   },
   {
-    value: "wheat",
+    value: "Wheat",
     label: "Wheat",
-    icon: "/icons/wheat-plant.svg",
+    icon: "/icons/wheat.svg",
+  },
+  {
+    value: "Potato",
+    label: "Potato",
+    icon: "/icons/potato.svg",
+  },
+  {
+    value: "Cauliflower",
+    label: "Cauliflower",
+    icon: "/icons/cauliflower.svg",
+  },
+  {
+    value: "Tomato",
+    label: "Tomato",
+    icon: "/icons/tomato.svg",
   },
 ];

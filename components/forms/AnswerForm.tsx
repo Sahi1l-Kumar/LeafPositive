@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { createAnswer } from "@/lib/actions/answer.action";
 import { AnswerSchema } from "@/lib/validations";
+import { api } from "@/lib/api";
 
 interface Props {
   questionId: string;
@@ -71,26 +72,21 @@ const AnswerForm = ({ questionId }: Props) => {
     }
 
     startAnsweringTransition(async () => {
-      // Handle image upload if there's an image
       let imageUrl;
       if (values.image instanceof File) {
         const formData = new FormData();
-        formData.append("image", values.image);
+        formData.append("file", values.image);
 
         try {
-          const response = await fetch("/api/upload-image", {
-            method: "POST",
-            body: formData,
-          });
+          const uploadResponse = await api.uploadImage(values.image);
 
-          if (!response.ok) {
-            throw new Error("Failed to upload image");
+          if (!uploadResponse.success || !uploadResponse.imageUrl) {
+            throw new Error("Failed to upload image to storage.");
           }
 
-          const data = await response.json();
-          imageUrl = data.url;
+          imageUrl = uploadResponse.imageUrl;
         } catch (error) {
-          return toast.error("Error", {
+          toast.error("Error", {
             description: "Failed to upload image. Please try again.",
           });
         }
@@ -99,7 +95,7 @@ const AnswerForm = ({ questionId }: Props) => {
       const result = await createAnswer({
         questionId,
         content: values.content,
-        image: imageUrl,
+        imageUrl: imageUrl,
       });
 
       if (result.success) {

@@ -2,7 +2,7 @@ import ROUTES from "@/constants/routes";
 import { IAccount } from "@/database/account.model";
 import { IUser } from "@/database/user.model";
 
-import { fetchHandler } from "./handlers/fetch";
+import { fetchFormDataHandler, fetchHandler } from "./handlers/fetch";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api";
@@ -71,5 +71,28 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ question, content, detectedDisease }),
       }),
+  },
+  uploadImage: (file: File): APIResponse<{ imageUrl: string }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return fetchFormDataHandler(`${API_BASE_URL}/upload-image`, {
+      method: "POST",
+      body: formData,
+    });
+  },
+
+  detectDisease: (
+    file: File,
+    crop: string
+  ): APIResponse<{ category: string; confidence: number }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("crop", crop);
+
+    return fetchFormDataHandler(`${API_BASE_URL}/detect-disease`, {
+      method: "POST",
+      body: formData,
+    });
   },
 };
