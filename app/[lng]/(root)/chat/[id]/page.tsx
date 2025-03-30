@@ -217,7 +217,7 @@ const ChatPage = () => {
                   <img
                     src={msg.imageUrl}
                     alt="Uploaded plant image"
-                    className="rounded-lg object-cover max-w-full h-auto"
+                    className="rounded-lg object-cover max-w-100 h-auto max-h-64"
                   />
                 </div>
               )}
