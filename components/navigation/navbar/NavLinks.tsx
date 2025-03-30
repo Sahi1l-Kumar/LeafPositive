@@ -35,7 +35,7 @@ const NavLinks = ({
     try {
       const response = await getChats({
         page: pageNum,
-        pageSize: 10,
+        pageSize: 15,
         query,
       });
 

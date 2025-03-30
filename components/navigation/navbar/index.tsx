@@ -10,9 +10,12 @@ import Theme from "./Theme";
 import LanguageSelector from "../../LanguageSelector";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+import { useTranslation } from "@/app/i18n";
 
 const Navbar = async ({ lng }: { lng: string }) => {
   const session = await auth();
+  const { t } = await useTranslation(lng, "translation");
+
   return (
     <nav className="flex-between background-light900_dark200 fixed z-50 w-full gap-5 p-6 shadow-light-300 dark:shadow-none sm:px-12">
       <MobileNavigation lng={lng} />
@@ -37,7 +40,7 @@ const Navbar = async ({ lng }: { lng: string }) => {
           className="primary-gradient min-h-[46px] px-4 py-3 !text-light-900 max-sm:hidden"
           asChild
         >
-          <Link href={ROUTES.COMMUNITY(lng)}>Community</Link>
+          <Link href={ROUTES.COMMUNITY(lng)}> {t("navigation.community")}</Link>
         </Button>
       </div>
 

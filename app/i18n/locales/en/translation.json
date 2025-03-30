@@ -21,11 +21,30 @@
     "getQuestionsAnswered": "To get your questions answered regarding Plants",
     "leafPositiveLogo": "LeafPositive Logo"
   },
+  "home": {
+    "title": "Leaf Positive",
+    "subtitle": "AI-powered plant disease detection and treatment recommendations for healthier crops",
+    "selectCrop": "Select Your Crop",
+    "howItWorks": "How It Works",
+    "step1Title": "Select Crop",
+    "step1Description": "Choose your crop type for accurate analysis",
+    "step2Title": "Upload Image",
+    "step2Description": "Upload a clear photo of your plant",
+    "step3Title": "Get Analysis",
+    "step3Description": "Receive AI-powered disease detection and treatment advice",
+    "uploadImage": "Upload Plant Image",
+    "changeCrop": "Change Crop",
+    "processing": "Processing...",
+    "startAnalysis": "Start Analysis"
+  },
   "navigation": {
     "logout": "Logout",
     "logIn": "Log In",
     "signUp": "Sign Up",
-    "account": "Account"
+    "account": "Account",
+    "menu": "Menu",
+    "title": "Navigation",
+    "community": "Community"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -37,8 +56,68 @@
     "newChat": "New chat",
     "searchPlaceholder": "Search chats...",
     "searchResults": "Search Results",
+    "today": "Today",
     "yesterday": "Yesterday",
     "previousWeek": "Previous 7 Days",
-    "previousMonth": "Previous 30 Days"
+    "previousMonth": "Previous 30 Days",
+    "older": "Older",
+    "loadMore": "Load More",
+    "noChats": "No chats yet",
+    "noSearchResults": "No chats found"
+  },
+  "pagination": {
+    "prev": "Prev",
+    "next": "Next"
+  },
+  "question": {
+    "uploadImage": "Upload Image (Optional)",
+    "upload": "Upload",
+    "chooseFile": "Choose File",
+    "clear": "Clear",
+    "noFileChosen": "No file chosen",
+    "selectCropType": "Select Crop Type (Optional)",
+    "selected": "Selected",
+    "selectCrop": "Select Crop",
+    "title": "Question Title",
+    "titleDescription": "Be specific and imagine you're asking a question to another person.",
+    "detailedExplanation": "Detailed explanation of your problem",
+    "contentDescription": "Introduce the problem and expand on what you've put in the title.",
+    "submitting": "Submitting",
+    "edit": "Edit",
+    "askQuestion": "Ask a Question",
+    "selectYourCrop": "Select your crop"
+  },
+  "answer": {
+    "writeYourAnswer": "Write your answer here",
+    "yourAnswer": "Your Answer",
+    "placeholder": "Write your answer here",
+    "description": "Explain your solution clearly and in detail to help the person who asked the question.",
+    "posting": "Posting...",
+    "postAnswer": "Post Answer",
+    "imageUploadFailed": "Failed to upload image to storage.",
+    "preview": "Preview",
+    "answered": "answered",
+    "image": "Answer Image"
+  },
+  "crops": {
+    "rice": "Rice",
+    "wheat": "Wheat",
+    "potato": "Potato",
+    "cauliflower": "Cauliflower",
+    "tomato": "Tomato"
+  },
+  "filters": {
+    "newest": "Newest",
+    "popular": "Popular",
+    "unanswered": "Unanswered",
+    "oldest": "Oldest",
+    "options": "Filter options",
+    "selectFilter": "Select a filter"
+  },
+  "common": {
+    "anonymous": "Anonymous",
+    "arrowLeft": "arrow-left",
+    "arrowRight": "arrow-right",
+    "loading": "Loading..."
   }
 }

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { formUrlQuery } from "@/lib/url";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/app/i18n/client";
 
 import { Button } from "./ui/button";
 
@@ -11,11 +12,13 @@ interface Props {
   page: number | undefined | string;
   isNext: boolean;
   containerClasses?: string;
+  lng: string;
 }
 
-const Pagination = ({ page = 1, isNext, containerClasses }: Props) => {
+const Pagination = ({ page = 1, isNext, containerClasses, lng }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useTranslation(lng, "translation");
 
   const handleNavigation = (type: "prev" | "next") => {
     const nextPageNumber =
@@ -43,7 +46,9 @@ const Pagination = ({ page = 1, isNext, containerClasses }: Props) => {
           onClick={() => handleNavigation("prev")}
           className="light-border-2 btn flex min-h-[36px] items-center justify-center gap-2 border"
         >
-          <p className="body-medium text-dark200_light800">Prev</p>
+          <p className="body-medium text-dark200_light800">
+            {t("pagination.prev")}
+          </p>
         </Button>
       )}
 
@@ -57,7 +62,9 @@ const Pagination = ({ page = 1, isNext, containerClasses }: Props) => {
           onClick={() => handleNavigation("next")}
           className="light-border-2 btn flex min-h-[36px] items-center justify-center gap-2 border"
         >
-          <p className="body-medium text-dark200_light800">Next</p>
+          <p className="body-medium text-dark200_light800">
+            {t("pagination.next")}
+          </p>
         </Button>
       )}
     </div>

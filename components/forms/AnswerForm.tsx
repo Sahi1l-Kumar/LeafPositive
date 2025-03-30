@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useTranslation } from "@/app/i18n/client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,12 +28,14 @@ import { api } from "@/lib/api";
 
 interface Props {
   questionId: string;
+  lng: string;
 }
 
-const AnswerForm = ({ questionId }: Props) => {
+const AnswerForm = ({ questionId, lng }: Props) => {
   const [isAnswering, startAnsweringTransition] = useTransition();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const session = useSession();
+  const { t } = useTranslation(lng, "translation");
 
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
@@ -81,7 +84,7 @@ const AnswerForm = ({ questionId }: Props) => {
           const uploadResponse = await api.uploadImage(values.image);
 
           if (!uploadResponse.success || !uploadResponse.imageUrl) {
-            throw new Error("Failed to upload image to storage.");
+            throw new Error(t("answer.imageUploadFailed"));
           }
 
           imageUrl = uploadResponse.imageUrl;
@@ -117,7 +120,7 @@ const AnswerForm = ({ questionId }: Props) => {
     <div>
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
         <h4 className="paragraph-semibold text-dark400_light800">
-          Write your answer here
+          {t("answer.writeYourAnswer")}
         </h4>
       </div>
       <Form {...form}>
@@ -132,7 +135,7 @@ const AnswerForm = ({ questionId }: Props) => {
             render={({ field: { value, onChange, ...field } }) => (
               <FormItem className="flex w-full flex-col">
                 <FormLabel className="paragraph-semibold text-dark400_light800">
-                  Upload Image (Optional)
+                  {t("question.uploadImage")}
                 </FormLabel>
                 <FormControl>
                   <div className="flex flex-col gap-4">
@@ -149,10 +152,10 @@ const AnswerForm = ({ questionId }: Props) => {
                           src="/icons/upload.svg"
                           width={18}
                           height={18}
-                          alt="Upload"
+                          alt={t("question.upload")}
                           className="invert-colors"
                         />
-                        Choose File
+                        {t("question.chooseFile")}
                       </Button>
                       <Input
                         id="image-upload"
@@ -169,7 +172,7 @@ const AnswerForm = ({ questionId }: Props) => {
                           onClick={clearImage}
                           className="text-red-500"
                         >
-                          Clear
+                          {t("question.clear")}
                         </Button>
                       )}
                     </div>
@@ -177,14 +180,14 @@ const AnswerForm = ({ questionId }: Props) => {
                       <div className="relative h-60 w-60 overflow-hidden rounded-md border border-gray-300 shadow-light100_dark100">
                         <Image
                           src={previewImage}
-                          alt="Preview"
+                          alt={t("answer.preview")}
                           fill
                           className="object-cover"
                         />
                       </div>
                     ) : (
                       <p className="body-regular text-light-400">
-                        No file chosen
+                        {t("question.noFileChosen")}
                       </p>
                     )}
                   </div>
@@ -200,18 +203,18 @@ const AnswerForm = ({ questionId }: Props) => {
             render={({ field }) => (
               <FormItem className="flex w-full flex-col gap-3">
                 <FormLabel className="paragraph-semibold text-dark400_light800">
-                  Your Answer <span className="text-primary-500">*</span>
+                  {t("answer.yourAnswer")}{" "}
+                  <span className="text-primary-500">*</span>
                 </FormLabel>
                 <FormControl className="mt-3.5">
                   <Textarea
                     className="paragraph-regular background-light700_dark300 light-border-2 text-dark300_light700 no-focus min-h-[100px] max-h-[100px] resize-none border custom-scrollbar break-words"
                     {...field}
-                    placeholder="Write your answer here"
+                    placeholder={t("answer.placeholder")}
                   />
                 </FormControl>
                 <FormDescription className="body-regular mt-2.5 text-light-500">
-                  Explain your solution clearly and in detail to help the person
-                  who asked the question.
+                  {t("answer.description")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -227,10 +230,10 @@ const AnswerForm = ({ questionId }: Props) => {
               {isAnswering ? (
                 <>
                   <ReloadIcon className="mr-2 size-4 animate-spin" />
-                  Posting...
+                  {t("answer.posting")}
                 </>
               ) : (
-                "Post Answer"
+                t("answer.postAnswer")
               )}
             </Button>
           </div>

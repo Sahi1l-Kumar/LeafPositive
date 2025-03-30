@@ -5,6 +5,7 @@ import DataRenderer from "../DataRenderer";
 import CommonFilter from "../filters/CommonFilter";
 import { AnswerFilters } from "@/constants/filters";
 import Pagination from "../Pagination";
+import getLanguageFromCookie from "@/lib/cookies";
 
 interface Props extends ActionResponse<Answer[]> {
   page: number;
@@ -20,6 +21,7 @@ const AllAnswers = async ({
   error,
   totalAnswers,
 }: Props) => {
+  const lng = await getLanguageFromCookie();
   return (
     <div className="mt-11">
       <div className="flex items-center justify-between">
@@ -43,7 +45,7 @@ const AllAnswers = async ({
         }
       />
 
-      <Pagination page={page} isNext={isNext} />
+      <Pagination page={page} isNext={isNext} lng={lng} />
     </div>
   );
 };

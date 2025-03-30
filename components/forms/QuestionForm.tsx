@@ -29,6 +29,7 @@ import { Textarea } from "../ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { CROP_OPTIONS } from "@/constants";
+import { useTranslation } from "@/app/i18n/client";
 
 interface Params {
   question?: Question;
@@ -38,6 +39,8 @@ interface Params {
 
 const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
   const router = useRouter();
+  const { t } = useTranslation(lng, "translation");
+
   const [isPending, startTransition] = useTransition();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -152,7 +155,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
             render={({ field: { value, onChange, ...field } }) => (
               <FormItem className="flex w-full flex-col">
                 <FormLabel className="paragraph-semibold text-dark400_light800">
-                  Upload Image (Optional)
+                  {t("question.uploadImage")}
                 </FormLabel>
                 <FormControl>
                   <div className="flex flex-col gap-4">
@@ -172,7 +175,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                           alt="Upload"
                           className="invert-colors"
                         />
-                        Choose File
+                        {t("question.chooseFile")}
                       </Button>
                       <Input
                         id="image-upload"
@@ -189,7 +192,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                           onClick={clearImage}
                           className="text-red-500"
                         >
-                          Clear
+                          {t("question.clear")}
                         </Button>
                       )}
                     </div>
@@ -204,7 +207,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                       </div>
                     ) : (
                       <p className="body-regular text-light-400">
-                        No file chosen
+                        {t("question.noFileChosen")}
                       </p>
                     )}
                   </div>
@@ -220,7 +223,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
             render={({ field }) => (
               <FormItem className="flex w-full flex-col">
                 <FormLabel className="paragraph-semibold text-dark400_light800">
-                  Select Crop Type (Optional)
+                  {t("question.selectCropType")}
                 </FormLabel>
                 <FormControl>
                   <div className="flex items-center gap-4">
@@ -231,8 +234,8 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                       className="paragraph-regular background-light700_dark300 light-border-2 text-dark300_light700"
                     >
                       {selectedCrop
-                        ? `Selected: ${selectedCrop.charAt(0).toUpperCase() + selectedCrop.slice(1)}`
-                        : "Select Crop"}
+                        ? `${t("question.selected")}: ${selectedCrop.charAt(0).toUpperCase() + selectedCrop.slice(1)}`
+                        : t("question.selectCrop")}
                     </Button>
 
                     {selectedCrop && (
@@ -242,7 +245,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                         onClick={() => form.setValue("crop", "")}
                         className="text-red-500"
                       >
-                        Clear
+                        {t("question.clear")}
                       </Button>
                     )}
                   </div>
@@ -258,7 +261,8 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
             render={({ field }) => (
               <FormItem className="flex w-full flex-col">
                 <FormLabel className="paragraph-semibold text-dark400_light800">
-                  Question Title <span className="text-primary-500">*</span>
+                  {t("question.title")}
+                  <span className="text-primary-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -267,8 +271,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                   />
                 </FormControl>
                 <FormDescription className="body-regular mt-2.5 text-light-500">
-                  Be specific and imagine you&apos;re asking a question to
-                  another person.
+                  {t("question.titleDescription")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -281,7 +284,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
             render={({ field }) => (
               <FormItem className="flex w-full flex-col">
                 <FormLabel className="paragraph-semibold text-dark400_light800">
-                  Detailed explanation of your problem{" "}
+                  {t("question.detailedExplanation")}
                   <span className="text-primary-500">*</span>
                 </FormLabel>
                 <FormControl>
@@ -291,8 +294,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                   />
                 </FormControl>
                 <FormDescription className="body-regular mt-2.5 text-light-500">
-                  Introduce the problem and expand on what you&apos;ve put in
-                  the title.
+                  {t("question.contentDescription")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -308,10 +310,10 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
               {isPending ? (
                 <>
                   <ReloadIcon className="mr-2 size-4 animate-spin" />
-                  <span>Submitting</span>
+                  <span>{t("question.submitting")}</span>
                 </>
               ) : (
-                <>{isEdit ? "Edit" : "Ask a Question"}</>
+                <>{isEdit ? t("question.edit") : t("question.askQuestion")}</>
               )}
             </Button>
           </div>
@@ -322,7 +324,7 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
         <DialogContent className="background-light900_dark200 sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="text-dark300_light900 h3-bold">
-              Select your crop
+              {t("question.selectYourCrop")}
             </DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-3 gap-4">
@@ -338,14 +340,14 @@ const QuestionForm = ({ question, isEdit = false, lng }: Params) => {
                 <div className="relative h-20 w-20 rounded-full bg-light-800 dark:bg-dark-400 flex-center">
                   <Image
                     src={option.icon}
-                    alt={option.label}
+                    alt={t(option.labelKey)}
                     width={40}
                     height={40}
                     className="object-contain"
                   />
                 </div>
                 <Label className="paragraph-medium text-dark300_light900 mt-2 cursor-pointer">
-                  {option.label}
+                  {t(option.labelKey)}
                 </Label>
               </div>
             ))}

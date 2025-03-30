@@ -10,6 +10,7 @@ import ROUTES from "@/constants/routes";
 import { getEmptyQuestion } from "@/constants/states";
 import { getQuestions } from "@/lib/actions/question.action";
 import Pagination from "@/components/Pagination";
+import { useTranslation } from "@/app/i18n";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
@@ -19,6 +20,7 @@ interface SearchParams {
 const Community = async ({ searchParams, params }: SearchParams) => {
   const { page, pageSize, query, filter } = await searchParams;
   const { lng } = await params;
+  const { t } = await useTranslation(lng, "translation");
   const EMPTY_QUESTION = getEmptyQuestion(lng);
 
   const { success, data, error } = await getQuestions({
@@ -33,20 +35,24 @@ const Community = async ({ searchParams, params }: SearchParams) => {
   return (
     <>
       <section className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
-        <h1 className="h1-bold text-dark100_light900">All Questions</h1>
+        <h1 className="h1-bold text-dark100_light900">
+          {t("navigation.community")}
+        </h1>
 
         <Button
           className="primary-gradient min-h-[46px] px-4 py-3 !text-light-900"
           asChild
         >
-          <Link href={ROUTES.ASK_QUESTION(lng)}>Ask a Question</Link>
+          <Link href={ROUTES.ASK_QUESTION(lng)}>
+            {t("question.askQuestion")}
+          </Link>
         </Button>
       </section>
       <section className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch
           route="/"
           imgSrc="/icons/search.svg"
-          placeholder="Search questions..."
+          placeholder={t("chat.searchPlaceholder")}
           otherClasses="flex-1"
         />
 
@@ -71,7 +77,7 @@ const Community = async ({ searchParams, params }: SearchParams) => {
         )}
       />
 
-      <Pagination page={page} isNext={isNext || false} />
+      <Pagination page={page} isNext={isNext || false} lng={lng} />
     </>
   );
 };

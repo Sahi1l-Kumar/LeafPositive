@@ -57,7 +57,7 @@ const MobileNavigation = async ({ lng }: MobileNavigationProps) => {
         <SheetClose asChild>
           <Link href={ROUTES.COMMUNITY(lng)} className="mt-6 flex-center">
             <Button className="primary-gradient w-[90%] min-h-[46px] px-4 py-3 !text-light-900">
-              Community
+              {t("navigation.community")}
             </Button>
           </Link>
         </SheetClose>

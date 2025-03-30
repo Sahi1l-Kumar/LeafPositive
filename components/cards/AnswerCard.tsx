@@ -10,7 +10,7 @@ import UserAvatar from "../UserAvatar";
 import Votes from "../votes/Votes";
 import getLanguageFromCookie from "@/lib/cookies";
 import Preview from "../Preview";
-import { title } from "process";
+import { useTranslation } from "@/app/i18n";
 
 const AnswerCard = async ({
   _id,
@@ -22,6 +22,7 @@ const AnswerCard = async ({
   imageUrl,
 }: Answer) => {
   const lng = await getLanguageFromCookie();
+  const { t } = await useTranslation(lng, "translation");
   const hasVotedPromise = hasVoted({
     targetId: _id,
     targetType: "answer",
@@ -46,12 +47,12 @@ const AnswerCard = async ({
             className="flex flex-col max-sm:ml-1 sm:flex-row sm:items-center"
           >
             <p className="body-semibold text-dark300_light700">
-              {author.name ?? "Anonymous"}
+              {author.name ?? t("common.anonymous")}
             </p>
 
             <p className="small-regular text-light400_light500 ml-0.5 mt-0.5 line-clamp-1">
               <span className="max-sm:hidden"> • </span>
-              answered {getTimeStamp(createdAt)}
+              {t("answer.answered")} {getTimeStamp(createdAt)}
             </p>
           </Link>
         </div>

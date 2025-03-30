@@ -21,11 +21,30 @@
     "getQuestionsAnswered": "पौधों के बारे में अपने प्रश्नों का उत्तर पाने के लिए",
     "leafPositiveLogo": "लीफ पॉजिटिव लोगो"
   },
+  "home": {
+    "title": "लीफ पॉजिटिव",
+    "subtitle": "स्वस्थ फसलों के लिए एआई-संचालित पौधों के रोग का पता लगाने और उपचार की सिफारिशें",
+    "selectCrop": "अपनी फसल चुनें",
+    "howItWorks": "यह कैसे काम करता है",
+    "step1Title": "फसल चुनें",
+    "step1Description": "सटीक विश्लेषण के लिए अपनी फसल का प्रकार चुनें",
+    "step2Title": "छवि अपलोड करें",
+    "step2Description": "अपने पौधे की स्पष्ट तस्वीर अपलोड करें",
+    "step3Title": "विश्लेषण प्राप्त करें",
+    "step3Description": "एआई-संचालित रोग पहचान और उपचार सलाह प्राप्त करें",
+    "uploadImage": "पौधे की छवि अपलोड करें",
+    "changeCrop": "फसल बदलें",
+    "processing": "प्रोसेसिंग हो रही है...",
+    "startAnalysis": "विश्लेषण शुरू करें"
+  },
   "navigation": {
     "logout": "लॉगआउट",
     "logIn": "लॉग इन करें",
     "signUp": "साइन अप करें",
-    "account": "खाता"
+    "account": "खाता",
+    "menu": "मेनू",
+    "title": "नेविगेशन",
+    "community": "समुदाय"
   },
   "theme": {
     "toggle": "थीम टॉगल करें",
@@ -37,8 +56,68 @@
     "newChat": "नई चैट",
     "searchPlaceholder": "चैट खोजें...",
     "searchResults": "खोज परिणाम",
+    "today": "आज",
     "yesterday": "कल",
     "previousWeek": "पिछले 7 दिन",
-    "previousMonth": "पिछले 30 दिन"
+    "previousMonth": "पिछले 30 दिन",
+    "older": "पुराने",
+    "loadMore": "और लोड करें",
+    "noChats": "अभी तक कोई चैट नहीं",
+    "noSearchResults": "कोई चैट नहीं मिली"
+  },
+  "pagination": {
+    "prev": "पिछला",
+    "next": "अगला"
+  },
+  "question": {
+    "uploadImage": "छवि अपलोड करें (वैकल्पिक)",
+    "upload": "अपलोड करें",
+    "chooseFile": "फ़ाइल चुनें",
+    "clear": "साफ़ करें",
+    "noFileChosen": "कोई फ़ाइल नहीं चुनी गई",
+    "selectCropType": "फसल प्रकार चुनें (वैकल्पिक)",
+    "selected": "चयनित",
+    "selectCrop": "फसल चुनें",
+    "title": "प्रश्न शीर्षक",
+    "titleDescription": "विशिष्ट रहें और कल्पना करें कि आप किसी अन्य व्यक्ति से प्रश्न पूछ रहे हैं।",
+    "detailedExplanation": "अपनी समस्या का विस्तृत विवरण",
+    "contentDescription": "समस्या का परिचय दें और शीर्षक में जो आपने डाला है उसका विस्तार करें।",
+    "submitting": "सबमिट कर रहा है",
+    "edit": "संपादित करें",
+    "askQuestion": "प्रश्न पूछें",
+    "selectYourCrop": "अपनी फसल चुनें"
+  },
+  "answer": {
+    "writeYourAnswer": "अपना उत्तर यहां लिखें",
+    "yourAnswer": "आपका उत्तर",
+    "placeholder": "अपना उत्तर यहां लिखें",
+    "description": "प्रश्न पूछने वाले व्यक्ति की मदद के लिए अपने समाधान को स्पष्ट और विस्तार से समझाएं।",
+    "posting": "पोस्ट कर रहा है...",
+    "postAnswer": "उत्तर पोस्ट करें",
+    "imageUploadFailed": "स्टोरेज में छवि अपलोड करने में विफल।",
+    "preview": "पूर्वावलोकन",
+    "answered": "उत्तर दिया",
+    "image": "उत्तर छवि"
+  },
+  "crops": {
+    "rice": "चावल",
+    "wheat": "गेहूं",
+    "potato": "आलू",
+    "cauliflower": "फूल गोभी",
+    "tomato": "टमाटर"
+  },
+  "filters": {
+    "newest": "नवीनतम",
+    "popular": "लोकप्रिय",
+    "unanswered": "अनुत्तरित",
+    "oldest": "सबसे पुराना",
+    "options": "फ़िल्टर विकल्प",
+    "selectFilter": "फ़िल्टर चुनें"
+  },
+  "common": {
+    "anonymous": "अनाम",
+    "arrowLeft": "बायां-तीर",
+    "arrowRight": "दायां-तीर",
+    "loading": "लोड हो रहा है..."
   }
 }

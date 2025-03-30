@@ -21,11 +21,30 @@
     "getQuestionsAnswered": "উদ্ভিদ সম্পর্কে আপনার প্রশ্নের উত্তর পেতে",
     "leafPositiveLogo": "লিফ পজিটিভ লোগো"
   },
+  "home": {
+    "title": "লিফ পজিটিভ",
+    "subtitle": "স্বাস্থ্যকর ফসলের জন্য AI-চালিত উদ্ভিদ রোগ সনাক্তকরণ এবং চিকিৎসার সুপারিশ",
+    "selectCrop": "আপনার ফসল নির্বাচন করুন",
+    "howItWorks": "এটি কীভাবে কাজ করে",
+    "step1Title": "ফসল নির্বাচন করুন",
+    "step1Description": "সঠিক বিশ্লেষণের জন্য আপনার ফসলের ধরন বেছে নিন",
+    "step2Title": "ছবি আপলোড করুন",
+    "step2Description": "আপনার উদ্ভিদের একটি পরিষ্কার ছবি আপলোড করুন",
+    "step3Title": "বিশ্লেষণ পান",
+    "step3Description": "AI-চালিত রোগ সনাক্তকরণ এবং চিকিৎসা পরামর্শ পান",
+    "uploadImage": "উদ্ভিদের ছবি আপলোড করুন",
+    "changeCrop": "ফসল পরিবর্তন করুন",
+    "processing": "প্রক্রিয়াকরণ হচ্ছে...",
+    "startAnalysis": "বিশ্লেষণ শুরু করুন"
+  },
   "navigation": {
     "logout": "লগআউট",
     "logIn": "লগ ইন করুন",
     "signUp": "সাইন আপ করুন",
-    "account": "অ্যাকাউন্ট"
+    "account": "অ্যাকাউন্ট",
+    "menu": "মেনু",
+    "title": "নেভিগেশন",
+    "community": "কমিউনিটি"
   },
   "theme": {
     "toggle": "থিম টগল করুন",
@@ -37,8 +56,68 @@
     "newChat": "নতুন চ্যাট",
     "searchPlaceholder": "চ্যাট অনুসন্ধান করুন...",
     "searchResults": "অনুসন্ধানের ফলাফল",
+    "today": "আজ",
     "yesterday": "গতকাল",
     "previousWeek": "গত 7 দিন",
-    "previousMonth": "গত 30 দিন"
+    "previousMonth": "গত 30 দিন",
+    "older": "পুরানো",
+    "loadMore": "আরও লোড করুন",
+    "noChats": "এখনও কোন চ্যাট নেই",
+    "noSearchResults": "কোন চ্যাট পাওয়া যায়নি"
+  },
+  "pagination": {
+    "prev": "পূর্ববর্তী",
+    "next": "পরবর্তী"
+  },
+  "question": {
+    "uploadImage": "ছবি আপলোড করুন (ঐচ্ছিক)",
+    "upload": "আপলোড",
+    "chooseFile": "ফাইল বেছে নিন",
+    "clear": "মুছুন",
+    "noFileChosen": "কোন ফাইল নির্বাচিত হয়নি",
+    "selectCropType": "ফসলের ধরন নির্বাচন করুন (ঐচ্ছিক)",
+    "selected": "নির্বাচিত",
+    "selectCrop": "ফসল নির্বাচন করুন",
+    "title": "প্রশ্নের শিরোনাম",
+    "titleDescription": "নির্দিষ্ট হোন এবং কল্পনা করুন আপনি অন্য কাউকে প্রশ্ন করছেন।",
+    "detailedExplanation": "আপনার সমস্যার বিস্তারিত ব্যাখ্যা",
+    "contentDescription": "সমস্যা পরিচয় করান এবং শিরোনামে আপনি যা রেখেছেন তা বিস্তৃত করুন।",
+    "submitting": "জমা দেওয়া হচ্ছে",
+    "edit": "সম্পাদনা",
+    "askQuestion": "প্রশ্ন জিজ্ঞাসা করুন",
+    "selectYourCrop": "আপনার ফসল নির্বাচন করুন"
+  },
+  "answer": {
+    "writeYourAnswer": "আপনার উত্তর এখানে লিখুন",
+    "yourAnswer": "আপনার উত্তর",
+    "placeholder": "আপনার উত্তর এখানে লিখুন",
+    "description": "প্রশ্ন জিজ্ঞাসাকারী ব্যক্তিকে সাহায্য করার জন্য আপনার সমাধান পরিষ্কারভাবে এবং বিস্তারিতভাবে ব্যাখ্যা করুন।",
+    "posting": "পোস্ট করা হচ্ছে...",
+    "postAnswer": "উত্তর পোস্ট করুন",
+    "imageUploadFailed": "স্টোরেজে ছবি আপলোড করতে ব্যর্থ হয়েছে।",
+    "preview": "প্রিভিউ",
+    "answered": "উত্তর দিয়েছেন",
+    "image": "উত্তরের ছবি"
+  },
+  "crops": {
+    "rice": "চাল",
+    "wheat": "গম",
+    "potato": "আলু",
+    "cauliflower": "ফুলকপি",
+    "tomato": "টমেটো"
+  },
+  "filters": {
+    "newest": "নতুন",
+    "popular": "জনপ্রিয়",
+    "unanswered": "উত্তরহীন",
+    "oldest": "পুরানো",
+    "options": "ফিল্টার অপশন",
+    "selectFilter": "একটি ফিল্টার নির্বাচন করুন"
+  },
+  "common": {
+    "anonymous": "বেনামী",
+    "arrowLeft": "বাম-তীর",
+    "arrowRight": "ডান-তীর",
+    "loading": "লোড হচ্ছে..."
   }
 }

@@ -1,15 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import React, { useState, useRef, useEffect, useTransition } from "react";
+import { useParams, useRouter } from "next/navigation";
+import React, { useState, useEffect, useTransition } from "react";
 
 import { addMessage, createChat } from "@/lib/actions/chat.action";
 import { CROP_OPTIONS } from "@/constants";
 import { LoadingSpinner } from "@/components/Loader";
 import { api } from "@/lib/api";
+import { useTranslation } from "@/app/i18n/client";
 
 const Home: React.FC = () => {
+  const params = useParams<{ lng: string }>();
+  const lng = params.lng;
+  const { t } = useTranslation(lng, "translation");
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -184,11 +188,10 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center text-center">
             <h1 className="h1-bold text-dark100_light900 text-center mb-8">
-              Leaf Positive
+              {t("home.title")}
             </h1>
             <p className="paragraph-medium text-dark400_light700 max-w-xl">
-              AI-powered plant disease detection and treatment recommendations
-              for healthier crops
+              {t("home.subtitle")}
             </p>
           </div>
         </div>
@@ -199,7 +202,7 @@ const Home: React.FC = () => {
           {!selectedCrop && (
             <div className="flex flex-col items-center animate-fade-in">
               <h2 className="h2-bold text-dark300_light900 mb-6 text-center">
-                Select Your Crop
+                {t("home.selectCrop")}
               </h2>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 w-full max-w-2xl mx-auto">
@@ -221,7 +224,7 @@ const Home: React.FC = () => {
                       }}
                     />
                     <span className="paragraph-semibold text-dark400_light700 text-center">
-                      {crop.label}
+                      {t(crop.labelKey)}
                     </span>
                   </button>
                 ))}
@@ -229,16 +232,18 @@ const Home: React.FC = () => {
 
               <div className="mt-12 w-full">
                 <h3 className="h3-semibold text-dark300_light900 mb-4 text-center">
-                  How It Works
+                  {t("home.howItWorks")}
                 </h3>
                 <div className="flex flex-col md:flex-row justify-between gap-4">
                   <div className="flex-1 flex flex-col items-center p-4 background-light800_dark300 rounded-lg">
                     <div className="w-10 h-10 rounded-full primary-gradient flex-center mb-3">
                       <span className="text-light-900 font-bold">1</span>
                     </div>
-                    <h4 className="paragraph-semibold mb-2">Select Crop</h4>
+                    <h4 className="paragraph-semibold mb-2">
+                      {t("home.step1Title")}
+                    </h4>
                     <p className="text-dark400_light700 text-center text-sm">
-                      Choose your crop type for accurate analysis
+                      {t("home.step1Description")}
                     </p>
                   </div>
 
@@ -246,9 +251,11 @@ const Home: React.FC = () => {
                     <div className="w-10 h-10 rounded-full primary-gradient flex-center mb-3">
                       <span className="text-light-900 font-bold">2</span>
                     </div>
-                    <h4 className="paragraph-semibold mb-2">Upload Image</h4>
+                    <h4 className="paragraph-semibold mb-2">
+                      {t("home.step2Title")}
+                    </h4>
                     <p className="text-dark400_light700 text-center text-sm">
-                      Upload a clear photo of your plant
+                      {t("home.step2Description")}
                     </p>
                   </div>
 
@@ -256,9 +263,11 @@ const Home: React.FC = () => {
                     <div className="w-10 h-10 rounded-full primary-gradient flex-center mb-3">
                       <span className="text-light-900 font-bold">3</span>
                     </div>
-                    <h4 className="paragraph-semibold mb-2">Get Analysis</h4>
+                    <h4 className="paragraph-semibold mb-2">
+                      {t("home.step3Title")}
+                    </h4>
                     <p className="text-dark400_light700 text-center text-sm">
-                      Receive AI-powered disease detection and treatment advice
+                      {t("home.step3Description")}
                     </p>
                   </div>
                 </div>
@@ -270,7 +279,7 @@ const Home: React.FC = () => {
             <div className="flex flex-col items-center animate-fade-in">
               <div className="flex justify-between w-full items-center mb-6">
                 <h2 className="h2-bold text-dark300_light900">
-                  Upload Plant Image
+                  {t("home.uploadImage")}
                 </h2>
                 <button
                   onClick={() => setSelectedCrop(null)}
@@ -278,13 +287,17 @@ const Home: React.FC = () => {
                 >
                   <Image
                     src="/icons/arrow-left.svg"
-                    alt="arrow-left"
+                    alt={t("common.arrowLeft")}
                     width={18}
                     height={18}
                     className="invert-colors"
                   />
-                  Change Crop (
-                  {CROP_OPTIONS.find((c) => c.value === selectedCrop)?.label})
+                  {t("home.changeCrop")} (
+                  {t(
+                    CROP_OPTIONS.find((c) => c.value === selectedCrop)
+                      ?.labelKey || ""
+                  )}
+                  )
                 </button>
               </div>
 
@@ -370,14 +383,14 @@ const Home: React.FC = () => {
                     {isPending ? (
                       <>
                         <LoadingSpinner className="mr-1" />
-                        Processing...
+                        {t("home.processing")}
                       </>
                     ) : (
                       <div className="flex items-center paragraph-semibold">
-                        Start Analysis
+                        {t("home.startAnalysis")}
                         <Image
                           src="icons/arrow-right.svg"
-                          alt="arrow right"
+                          alt={t("common.arrowRight")}
                           width={18}
                           height={18}
                           className="ml-2"
