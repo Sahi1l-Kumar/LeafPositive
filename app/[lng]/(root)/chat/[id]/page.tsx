@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 
 import { api } from "@/lib/api";
 import { getChat, addMessage } from "@/lib/actions/chat.action";
+import Image from "next/image";
 
 interface UIMessage {
   role: "user" | "ai";
@@ -213,11 +214,18 @@ const ChatPage = () => {
               }`}
             >
               {msg.imageUrl && (
-                <div className="mb-2">
-                  <img
+                <div className="mb-2 relative w-full max-xs:max-w-full">
+                  <Image
                     src={msg.imageUrl}
                     alt="Uploaded plant image"
-                    className="rounded-lg object-cover max-w-100 h-auto max-h-64"
+                    width={500}
+                    height={300}
+                    className="rounded-lg"
+                    style={{
+                      objectFit: "contain",
+                      maxHeight: "16rem",
+                    }}
+                    sizes="(max-width: 420px) 90vw, (max-width: 768px) 70vw, 500px"
                   />
                 </div>
               )}
@@ -328,7 +336,7 @@ const ChatPage = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="sticky bottom-0 w-full background-light900_dark200 border-t light-border shadow-dark-100 rounded-lg">
+      <div className="fixed bottom-0 left-0 right-0 w-full background-light900_dark200 border-t light-border shadow-dark-100 md:sticky">
         <div className="container mx-auto px-4 py-3">
           <form onSubmit={sendMessage} className="flex gap-2 max-w-3xl mx-auto">
             <input

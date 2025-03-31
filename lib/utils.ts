@@ -90,15 +90,25 @@ export const groupChatsByDate = (chats: Chat[]): DateGroups => {
   return groups;
 };
 
-const extractCropFromMessage = (content: string): string => {
-  const cropNames = ["rice", "wheat", "potato", "tomato", "cauliflower"];
-  const lowerContent = content.toLowerCase();
+export const isImageTooLarge = (
+  file: File,
+  maxWidth: number = 2000,
+  maxHeight: number = 2000
+): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const img = new globalThis.Image();
+    const objectUrl = URL.createObjectURL(file);
 
-  for (const crop of cropNames) {
-    if (lowerContent.includes(crop)) {
-      return crop.charAt(0).toUpperCase() + crop.slice(1);
-    }
-  }
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(img.width > maxWidth || img.height > maxHeight);
+    };
 
-  return "Plant";
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(false);
+    };
+
+    img.src = objectUrl;
+  });
 };

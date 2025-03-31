@@ -9,6 +9,7 @@ import { CROP_OPTIONS } from "@/constants";
 import { LoadingSpinner } from "@/components/Loader";
 import { api } from "@/lib/api";
 import { useTranslation } from "@/app/i18n/client";
+import { isImageTooLarge } from "@/lib/utils";
 
 const Home: React.FC = () => {
   const params = useParams<{ lng: string }>();
@@ -28,33 +29,41 @@ const Home: React.FC = () => {
     setError(null);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.size > 10 * 1024 * 1024) {
-        setError("File size exceeds 10MB limit.");
-        setFile(null);
-        setPreview(null);
-        e.target.value = "";
-        return;
-      }
-      if (!selectedFile.type.startsWith("image/")) {
-        setError(
-          "Please upload a valid image file (PNG, JPG, JPEG, WEBP, etc.)."
-        );
-        setFile(null);
-        setPreview(null);
-        e.target.value = "";
-        return;
-      }
+    if (!selectedFile) return;
 
-      setFile(selectedFile);
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      setError("File size exceeds 10MB limit.");
+      setFile(null);
+      setPreview(null);
+      e.target.value = "";
+      return;
+    }
+
+    if (!selectedFile.type.startsWith("image/")) {
+      setError(
+        "Please upload a valid image file (PNG, JPG, JPEG, WEBP, etc.)."
+      );
+      setFile(null);
+      setPreview(null);
+      e.target.value = "";
+      return;
+    }
+
+    const tooLarge = await isImageTooLarge(selectedFile);
+
+    setFile(selectedFile);
+
+    if (!tooLarge) {
       const previewUrl = URL.createObjectURL(selectedFile);
       setPreview(previewUrl);
       setError(null);
+    } else {
+      setPreview(null);
+      setError(
+        "Image dimensions are too large for preview, but will be uploaded."
+      );
     }
   };
 
@@ -63,19 +72,21 @@ const Home: React.FC = () => {
     e.stopPropagation();
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setError(null);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
+
       if (droppedFile.size > 10 * 1024 * 1024) {
         setError("File size exceeds 10MB limit.");
         setFile(null);
         setPreview(null);
         return;
       }
+
       if (!droppedFile.type.startsWith("image/")) {
         setError(
           "Please drop a valid image file (PNG, JPG, JPEG, WEBP, etc.)."
@@ -85,12 +96,20 @@ const Home: React.FC = () => {
         return;
       }
 
+      const tooLarge = await isImageTooLarge(droppedFile);
+
       setFile(droppedFile);
-      if (preview) {
-        URL.revokeObjectURL(preview);
+
+      if (!tooLarge) {
+        const previewUrl = URL.createObjectURL(droppedFile);
+        setPreview(previewUrl);
+        setError(null);
+      } else {
+        setPreview(null);
+        setError(
+          "Image dimensions are too large for preview, but will be uploaded."
+        );
       }
-      const previewUrl = URL.createObjectURL(droppedFile);
-      setPreview(previewUrl);
     }
   };
 
@@ -100,6 +119,9 @@ const Home: React.FC = () => {
     }
     setFile(null);
     setPreview(null);
+    if (error && error.includes("dimensions")) {
+      setError(null);
+    }
     const fileInput = document.getElementById(
       "file-upload-input"
     ) as HTMLInputElement;
@@ -164,7 +186,7 @@ const Home: React.FC = () => {
             },
           });
         }
-        router.push(`en/chat/${newChatId}`);
+        router.push(`${lng}/chat/${newChatId}`);
       } catch (err: any) {
         console.error("Submission process failed:", err);
         setError(
@@ -297,7 +319,7 @@ const Home: React.FC = () => {
                 </button>
               </div>
 
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-md mx-auto">
                 {!preview ? (
                   <label
                     htmlFor="file-upload-input"
@@ -334,16 +356,17 @@ const Home: React.FC = () => {
                     />
                   </label>
                 ) : (
-                  <div className="relative h-64 w-full overflow-hidden rounded-lg border light-border group shadow-light100_dark100">
+                  <div className="relative w-full max-xs:max-w-[85%] mx-auto h-64 overflow-hidden rounded-lg border light-border group shadow-light100_dark100">
                     <Image
                       src={preview}
                       alt="Plant image preview"
                       layout="fill"
-                      objectFit="cover"
+                      objectFit="contain"
+                      sizes="(max-width: 420px) 85vw, 500px"
                     />
                     <button
                       onClick={handleClearPreview}
-                      className="absolute top-2 right-2 z-10 p-1.5 bg-black/40 dark:bg-white/40 text-white rounded-full hover:bg-black/60 dark:hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-white opacity-70 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 z-10 p-1.5 bg-black/60 dark:bg-white/60 text-white dark:text-dark-300 rounded-full hover:bg-black/80 dark:hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-md border border-gray-200 dark:border-gray-700 opacity-90 group-hover:opacity-100 transition-opacity"
                       aria-label="Clear image preview"
                     >
                       <Image
@@ -357,17 +380,37 @@ const Home: React.FC = () => {
                 )}
 
                 <div className="mt-4 w-full space-y-2">
-                  {preview && file && (
-                    <div className="flex items-center justify-between text-xs px-1 background-light700_dark400 p-2 rounded">
-                      <p
-                        className="text-dark400_light700 truncate max-w-[70%]"
-                        title={file.name}
-                      >
-                        {file.name}
-                      </p>
-                      <p className="text-dark500_light700 flex-shrink-0">
-                        {(file.size / (1024 * 1024)).toFixed(2)} MB
-                      </p>
+                  {file && (
+                    <div className="flex items-center text-xs px-1 background-light700_dark400 p-2 rounded overflow-hidden">
+                      <div className="flex-1 min-w-0 mr-2">
+                        <p
+                          className="text-dark400_light700 truncate"
+                          title={file.name}
+                        >
+                          {file.name.length > 5
+                            ? `${file.name.substring(0, 5)}...${file.name.substring(file.name.lastIndexOf("."))}`
+                            : file.name}
+                        </p>
+                      </div>
+                      <div className="flex items-center flex-shrink-0">
+                        <p className="text-dark500_light700 mr-2">
+                          {(file.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                        {!preview && (
+                          <button
+                            onClick={handleClearPreview}
+                            className="p-1 bg-red-500/20 text-red-500 rounded-full hover:bg-red-500/30 focus:outline-none"
+                            aria-label="Remove file"
+                          >
+                            <Image
+                              src="/icons/close.svg"
+                              alt="Remove Image"
+                              width={14}
+                              height={14}
+                            />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
 
