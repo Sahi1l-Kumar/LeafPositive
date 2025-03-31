@@ -48,6 +48,14 @@ const AnswerForm = ({ questionId, lng }: Props) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Invalid file type", {
+          description: "Please upload only image files (PNG, JPG, JPEG, etc.)",
+        });
+        e.target.value = "";
+        return;
+      }
+
       form.setValue("image", file);
       const reader = new FileReader();
       reader.onload = () => {

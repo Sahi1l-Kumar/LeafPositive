@@ -8,6 +8,7 @@ import remarkGfm from "remark-gfm";
 import { api } from "@/lib/api";
 import { getChat, addMessage } from "@/lib/actions/chat.action";
 import Image from "next/image";
+import { Textarea } from "@/components/ui/textarea";
 
 interface UIMessage {
   role: "user" | "ai";
@@ -30,7 +31,7 @@ const ChatPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [diseaseContextUsed, setDiseaseContextUsed] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initialAiFetchDone = useRef(false);
 
@@ -207,7 +208,7 @@ const ChatPage = () => {
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-xl lg:max-w-3xl rounded-lg p-3 shadow-sm ${
+              className={`max-w-xl lg:max-w-3xl rounded-lg p-3 shadow-sm overflow-hidden break-words ${
                 msg.role === "user"
                   ? "primary-gradient text-light-900 rounded-br-none"
                   : "background-light800_dark400 text-dark300_light900 rounded-bl-none border light-border"
@@ -336,12 +337,11 @@ const ChatPage = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 w-full background-light900_dark200 border-t light-border shadow-dark-100 md:sticky">
+      <div className="fixed bottom-0 left-0 right-0 w-full background-light900_dark200 border-t light-border shadow-dark-100 md:sticky rounded-lg">
         <div className="container mx-auto px-4 py-3">
           <form onSubmit={sendMessage} className="flex gap-2 max-w-3xl mx-auto">
-            <input
+            <Textarea
               ref={inputRef}
-              type="text"
               value={currentMessage}
               onChange={(e) => setCurrentMessage(e.target.value)}
               placeholder={
@@ -350,7 +350,13 @@ const ChatPage = () => {
                   : "Ask a question..."
               }
               disabled={isTyping || isLoadingInitial}
-              className="flex-1 p-3 rounded-lg background-light800_dark300 text-dark300_light900 placeholder border light-border-2 no-focus focus:ring-1 focus:ring-primary-500"
+              className="flex-1 min-h-[42px] max-h-[84px] p-3 rounded-lg background-light800_dark300 text-dark300_light900 placeholder border light-border-2 no-focus focus:ring-1 focus:ring-primary-500 max-xs:text-sm resize-none"
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = "auto";
+                const newHeight = Math.min(target.scrollHeight, 84);
+                target.style.height = `${newHeight}px`;
+              }}
             />
             <button
               type="submit"
@@ -362,7 +368,7 @@ const ChatPage = () => {
               }`}
             >
               <svg
-                className="w-5 h-5"
+                className="w-5 h-5 max-xs:w-4 max-xs:h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

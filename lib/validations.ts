@@ -64,7 +64,12 @@ export const AskQuestionSchema = z.object({
     .min(5, { message: "Title is required." })
     .max(100, { message: "Title cannot exceed 100 characters." }),
   content: z.string().min(1, { message: "Body is required." }),
-  image: z.any().optional(),
+  image: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.type.startsWith("image/"), {
+      message: "Only image files are allowed (PNG, JPG, JPEG, etc.)",
+    }),
   imageUrl: z
     .string()
     .url({ message: "Please provide a valid URL." })
@@ -162,7 +167,12 @@ export const AnswerServerSchema = z.object({
     .string()
     .min(20, { message: "Answer has to have more than 20 characters." }),
   imageUrl: z.string().url().optional(),
-  image: z.any().optional(),
+  image: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.type.startsWith("image/"), {
+      message: "Only image files are allowed (PNG, JPG, JPEG, etc.)",
+    }),
 });
 
 export const GetAnswersSchema = PaginatedSearchParamsSchema.extend({
