@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
         hostname: "avatars.githubusercontent.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "leafpositive.vercel.app",
+        port: "",
+      },
     ],
   },
   async redirects() {
