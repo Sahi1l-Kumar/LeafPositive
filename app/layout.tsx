@@ -24,7 +24,7 @@ const spaceGrotesk = localFont({
 export const metadata: Metadata = {
   title: "Leaf Positive",
   description:
-    "An app that checks the pulse of your plants, detecting health issues and guiding you towards effective treatments.",
+    "Empowering farmers with AI-driven plant disease detection and instant remedies. Scan, analyze, and get expert-backed solutions through AI—because healthier crops mean a better future! 🌿✨",
   icons: {
     icon: "/images/site-logo.svg",
   },
