@@ -354,8 +354,15 @@ const ChatPage = () => {
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
                 target.style.height = "auto";
-                const newHeight = Math.min(target.scrollHeight, 84);
+                const scrollHeight = target.scrollHeight;
+                const minHeight = 42;
+                const newHeight = Math.max(
+                  minHeight,
+                  Math.min(scrollHeight, 84)
+                );
                 target.style.height = `${newHeight}px`;
+                target.style.overflowY =
+                  scrollHeight > newHeight ? "auto" : "hidden";
               }}
             />
             <button
