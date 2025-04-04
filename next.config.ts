@@ -3,8 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   serverExternalPackages: ["pino", "pino-pretty"],
   images: {
-    domains: ["leafpositive.s3.amazonaws.com"],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "leafpositive.s3.amazonaws.com",
+        pathname: "/**",
+      },
       {
         protocol: "https",
         hostname: "static.vecteezy.com",
@@ -26,6 +30,11 @@ const nextConfig: NextConfig = {
         port: "",
       },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "5mb",
+    },
   },
   async redirects() {
     return [
