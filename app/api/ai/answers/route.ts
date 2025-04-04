@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import handleError from "@/lib/handlers/error";
 import { ValidationError } from "@/lib/http-errors";
 import { AIAnswerSchema } from "@/lib/validations";
+import getLanguageFromCookie from "@/lib/cookies";
 
 export async function POST(req: Request) {
   const { question, content, detectedDisease } = await req.json();
@@ -16,6 +17,7 @@ export async function POST(req: Request) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors);
     }
 
+    const lng = await getLanguageFromCookie();
     let prompt = "";
 
     if (detectedDisease) {
@@ -43,8 +45,7 @@ export async function POST(req: Request) {
     const { text } = await generateText({
       model: google("gemini-2.0-flash-exp"),
       prompt: prompt,
-      system:
-        "You are a specialized plant disease assistant that provides expert information on plant diseases, treatments, and care. Only answer questions related to plants and gardening. If asked about unrelated topics, politely redirect the conversation to plants. Use markdown formatting for clear, well-structured responses with appropriate headings, lists, and emphasis. Include scientific names where relevant and practical advice that gardeners can implement.Focus on the user's latest query. Only reference previously identified diseases if directly relevant to the current question.",
+      system: `You are a specialized plant disease assistant that provides expert information on plant diseases, treatments, and care. Only answer questions related to plants and gardening. If asked about unrelated topics, politely redirect the conversation to plants. Use markdown formatting for clear, well-structured responses with appropriate headings, lists, and emphasis. Include scientific names where relevant and practical advice that gardeners can implement. Focus on the user's latest query. Only reference previously identified diseases if directly relevant to the current question. Please respond in ${lng} language.`,
     });
 
     return NextResponse.json({ success: true, data: text }, { status: 200 });
